@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  pujakriti-mysql:
+    image: mysql
+    restart: always
+    container_name: "pujakriti-mysql"
+    environment:
+      MYSQL_ROOT_PASSWORD: 'password'
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./data.sql:/docker-entrypoint-initdb.d/data.sql
+      - pujakriti-mysql-data:/var/lib/mysql
+
+  pujakriti-redis:
+    image: "redis:latest"
+    container_name: "pujakriti-redis-container"
+    ports:
+      - "6379:6379"
+    volumes:
+      - pujakriti-redis-data:/data
+
+volumes:
+  pujakriti-redis-data:
+  pujakriti-mysql-data:
