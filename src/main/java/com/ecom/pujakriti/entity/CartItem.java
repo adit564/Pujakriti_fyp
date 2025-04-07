@@ -15,7 +15,7 @@ public class CartItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "CartitemID")
-    private Long cartItemId;
+    private Integer cartItemId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CartID", nullable = false)

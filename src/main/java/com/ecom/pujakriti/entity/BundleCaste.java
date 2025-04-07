@@ -15,7 +15,7 @@ public class BundleCaste {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "BundleCasteID")
-    private Long bundleCasteId;
+    private Integer bundleCasteId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "BundleID", nullable = false)

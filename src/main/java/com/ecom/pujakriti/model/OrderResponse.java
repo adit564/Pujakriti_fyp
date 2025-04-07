@@ -15,7 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderResponse {
-    private Long orderId;
+    private Integer orderId;
     private User user;
     private Double totalAmount;
     private Address address;

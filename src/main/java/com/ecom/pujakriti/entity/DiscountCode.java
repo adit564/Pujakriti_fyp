@@ -18,7 +18,7 @@ public class DiscountCode {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "DiscountID")
-    private Long discountId;
+    private Integer discountId;
 
     @Column(unique = true, nullable = false)
     private String code;

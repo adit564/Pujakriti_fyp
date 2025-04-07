@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   pujakriti-mysql:
     image: mysql
@@ -7,6 +5,7 @@ services:
     container_name: "pujakriti-mysql"
     environment:
       MYSQL_ROOT_PASSWORD: 'password'
+      MYSQL_DATABASE: Pujakriti
     ports:
       - "3306:3306"
     volumes:

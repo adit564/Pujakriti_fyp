@@ -4,8 +4,11 @@ import com.ecom.pujakriti.entity.Product;
 import com.ecom.pujakriti.model.ProductResponse;
 import com.ecom.pujakriti.repository.ProductRepository;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,23 +25,27 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductResponse getProductById(Long id) {
-        return null;
+    public ProductResponse getProductById(Integer id) {
+        log.info("Fetching product with id {}", id);
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+        log.info("Product fetched successfully");
+        return convertToProductResponse(product);
     }
 
     @Override
-    public List<ProductResponse> getProducts() {
+    public Page<ProductResponse> getProducts(Pageable pageable) {
         log.info("Fetching products");
 
 //      Fetch Products
-        List<Product> products = productRepository.findAll();
+        Page<Product> productPage = productRepository.findAll(pageable);
 
 //        Stream Operator to map with Response
 
-        List<ProductResponse> productResponses = products.stream()
-                .map(this::convertToProductResponse)
-                .collect(Collectors.toList());
+        Page<ProductResponse> productResponses = productPage
+                .map(this::convertToProductResponse);
         log.info("Products fetched successfully");
+
         return productResponses;
     }
 
@@ -48,6 +55,7 @@ public class ProductServiceImpl implements ProductService {
                 .name(product.getName())
                 .description(product.getDescription())
                 .price(product.getPrice())
+                .category(product.getCategory().getName())
                 .build();
     }
 }

@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PaymentResponse {
-    private Long paymentId;
+    private Integer paymentId;
 
     private Order order;
 

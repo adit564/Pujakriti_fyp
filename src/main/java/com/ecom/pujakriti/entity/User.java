@@ -19,7 +19,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "UserID")
-    private Long userId;
+    private Integer userId;
 
     @Column(name = "Name", nullable = false)
     private String name;
@@ -29,6 +29,9 @@ public class User {
 
     @Column(name = "Phone", nullable = false)
     private String phone;
+
+    @Column(name = "Email", nullable = false)
+    private String email;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "Role", nullable = false)

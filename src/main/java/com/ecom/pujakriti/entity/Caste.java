@@ -15,7 +15,7 @@ public class Caste {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "CasteID")
-    private Long casteId;
+    private Integer casteId;
 
     @Column(name = "Name", nullable = false)
     private String name;

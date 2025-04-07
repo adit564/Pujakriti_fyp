@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DiscountCodeResponse {
-    private Long discountId;
+    private Integer discountId;
     private String code;
     private Double discountRate;
     private Boolean isActive;

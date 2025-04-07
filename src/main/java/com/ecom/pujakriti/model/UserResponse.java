@@ -16,17 +16,15 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserResponse {
-    private Long userId;
+    private Integer userId;
 
     private String name;
 
-    private String password;
-
     private String phone;
 
-    private User.Role role;
+    private String email;
 
-    private LocalDateTime createdAt;
+    private User.Role role;
 
     private Boolean isActive;
 

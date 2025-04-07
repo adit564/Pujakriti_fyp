@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductResponse {
-    private Long productId;
+    private Integer productId;
 
     private String name;
 
@@ -19,5 +19,6 @@ public class ProductResponse {
 
     private Double price;
 
-    private Category category;
+    private String category;
+
 }

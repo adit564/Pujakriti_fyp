@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PujaResponse {
-    private Long pujaId;
+    private Integer pujaId;
 
     private String name;
 

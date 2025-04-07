@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CasteResponse {
-    private Long casteId;
+    private Integer casteId;
     private String name;
 
 }

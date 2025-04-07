@@ -17,7 +17,7 @@ public class Guide {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "GuideID")
-    private Long guideId;
+    private Integer guideId;
 
     @Column(name = "Name", nullable = false)
     private String name;

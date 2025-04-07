@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BundleResponse {
-    private Long bundleId;
+    private Integer bundleId;
     private String name;
     private String description;
     private Double price;

@@ -15,7 +15,7 @@ public class BundleImage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ImageID")
-    private Long imageId;
+    private Integer imageId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "BundleID", nullable = false)

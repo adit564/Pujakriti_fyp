@@ -15,7 +15,7 @@ public class BundleProduct {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "BundleProductID")
-    private Long bundleProductId;
+    private Integer bundleProductId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "BundleID", nullable = false)

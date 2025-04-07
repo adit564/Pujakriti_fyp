@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS User (
                                     Name VARCHAR(255) NOT NULL,
     Password VARCHAR(255) NOT NULL,
     Phone VARCHAR(15) NOT NULL,
+    Email VARCHAR(50) NOT NULL,
     Role ENUM('ADMIN', 'USER') NOT NULL,
     CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     IsActive BOOLEAN DEFAULT TRUE
@@ -77,8 +78,8 @@ CREATE TABLE IF NOT EXISTS FAQ (
 
 
 -- 1. Seed Data for User (Admin Account)
-INSERT INTO User (UserID, Name, Password, Phone, Role, CreatedAt, IsActive)
-VALUES (1, 'Admin', 'hashed_password', '9800000000', 'ADMIN', NOW(), TRUE);
+INSERT INTO User (UserID, Name, Password, Phone, Email, Role, CreatedAt, IsActive)
+VALUES (1, 'Admin', 'hashed_password', '9800000000', "admin@gmail.com" , 'ADMIN', NOW(), TRUE);
 
 -- 2. Seed Data for Category
 INSERT INTO Category (CategoryID, Name, Description)

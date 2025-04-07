@@ -16,7 +16,7 @@ public class Bundle {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "BundleID")
-    private Long bundleId;
+    private Integer bundleId;
 
     @Column(name = "Name", nullable = false)
     private String name;
