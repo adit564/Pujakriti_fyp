@@ -10,5 +10,7 @@ public interface ProductService {
 
     ProductResponse getProductById(Integer id);
 
-    Page<ProductResponse> getProducts(Pageable pageable);
+    Page<ProductResponse> getProducts(Pageable pageable, Integer categoryId, String name);
+
+
 }

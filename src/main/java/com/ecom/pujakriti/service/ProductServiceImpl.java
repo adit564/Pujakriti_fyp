@@ -6,6 +6,7 @@ import com.ecom.pujakriti.repository.ProductRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -34,19 +35,21 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Page<ProductResponse> getProducts(Pageable pageable) {
+    public Page<ProductResponse> getProducts(Pageable pageable , Integer categoryId, String keyword) {
         log.info("Fetching products");
+        Specification<Product> spec = Specification.where(null);
 
-//      Fetch Products
-        Page<Product> productPage = productRepository.findAll(pageable);
 
-//        Stream Operator to map with Response
+        if(categoryId != null) {
+            spec = spec.and((root, query, cb) -> cb.equal(root.get("category").get("categoryId"), categoryId));
+        }
 
-        Page<ProductResponse> productResponses = productPage
-                .map(this::convertToProductResponse);
-        log.info("Products fetched successfully");
+        if(keyword != null && !keyword.isEmpty()) {
+            spec = spec.and((root, query, cb) -> cb.like(root.get("name"), "%" + keyword + "%"));
+        }
 
-        return productResponses;
+        return productRepository.findAll(spec,pageable).map(this::convertToProductResponse);
+
     }
 
     private ProductResponse convertToProductResponse(Product product) {

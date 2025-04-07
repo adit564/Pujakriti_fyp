@@ -6,14 +6,13 @@ import com.ecom.pujakriti.model.ProductResponse;
 import com.ecom.pujakriti.service.CategoryService;
 import com.ecom.pujakriti.service.ProductService;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -39,9 +38,18 @@ public class ProductController {
 
     @GetMapping
     public ResponseEntity<Page<ProductResponse>> getProducts(
-            @PageableDefault(size = 10) Pageable pageable
+           @RequestParam(name = "page", defaultValue = "0") int page,
+           @RequestParam(name = "size", defaultValue = "10") int size,
+           @RequestParam(name = "keyword", required = false) String keyword,
+           @RequestParam(name = "Category", required = false) Integer CategoryId,
+           @RequestParam(name = "sort", defaultValue = "name") String sort,
+           @RequestParam(name = "order", defaultValue = "asc") String order
+
     ) {
-        Page<ProductResponse> productResponses = productService.getProducts(pageable);
+        Sort.Direction direction = order.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sortOrder = Sort.by(direction,sort);
+        Pageable pageable = PageRequest.of(page,size,sortOrder);
+        Page<ProductResponse> productResponses = productService.getProducts(pageable,CategoryId,keyword);
         return new ResponseEntity<>(productResponses,HttpStatus.OK);
     }
 
