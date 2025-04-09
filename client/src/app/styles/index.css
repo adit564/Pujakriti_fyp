@@ -1,0 +1,14 @@
+body{
+    font-family: 'helvetica_neueregular';
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    color: #131313;
+    background: #f8f8f8;
+}
+
+
+::-webkit-scrollbar{
+    width: 0vw;
+}

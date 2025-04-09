@@ -1,0 +1,145 @@
+.carousel-container {
+  position: relative;
+  width: 105vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.carousel-background {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.background-video {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+}
+
+.background-video.active {
+  opacity: 1;
+}
+
+.carousel-content {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  z-index: 2;
+}
+
+.carousel-items {
+  position: relative;
+  width: 60%;
+  height: 50%;
+  max-width: 1200px;
+  overflow: hidden;
+}
+
+.carousel-item {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.carousel-item.active {
+  opacity: 1;
+}
+
+.carousel-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 1.5vw;
+  opacity: 0.8;
+}
+
+.carousel-items .carousel-caption {
+  position: absolute;
+  bottom: 50%;
+  left: 50%;
+  transform: translate(-50%, 50%);
+  color: white;
+  text-align: center;
+}
+
+.carousel-items .carousel-caption h3{
+  font-size: 2.5vw;
+  margin: 0;
+  text-align: center;
+  pointer-events: none;
+  cursor: none;
+}
+
+
+/* .nav-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.3);
+  border: none;
+  color: white;
+  font-size: 24px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s;
+}
+
+.nav-button:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.nav-button.left {
+  left: 5%;
+}
+
+.nav-button.right {
+  right: 5%;
+} */
+
+.carousel-dots {
+  position: absolute;
+  bottom: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.5vw;
+  z-index: 3;
+  background-color: #ddd4cd;
+  padding: 0.75vh 0.5vw;
+  border-radius: 1.5vw;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(107, 107, 107, 0.5);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  transform: scale(0.7);
+
+}
+
+.dot.active {
+  background: rgb(90, 90, 90);
+  transform: scale(0.9);
+}
+
+.dot:hover {
+  background: rgba(255, 255, 255, 0.8);
+}

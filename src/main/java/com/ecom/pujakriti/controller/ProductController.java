@@ -41,8 +41,8 @@ public class ProductController {
            @RequestParam(name = "page", defaultValue = "0") int page,
            @RequestParam(name = "size", defaultValue = "10") int size,
            @RequestParam(name = "keyword", required = false) String keyword,
-           @RequestParam(name = "Category", required = false) Integer CategoryId,
-           @RequestParam(name = "sort", defaultValue = "name") String sort,
+           @RequestParam(name = "ategory", required = false) Integer CategoryId,
+           @RequestParam(name = "sort", defaultValue = "productId") String sort,
            @RequestParam(name = "order", defaultValue = "asc") String order
 
     ) {
