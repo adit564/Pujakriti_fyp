@@ -7,6 +7,7 @@ import Navbar from "./navbar.tsx";
 import { Route, Routes } from "react-router-dom";
 import Catalog from "../../features/catalog/catalog.tsx";
 import Footer from "./footer.tsx";
+import BundleCatalog from "../../features/catalog/bundleCatalog.tsx";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
       <Routes>
       <Route path="/" element={<HomePage />} />
         <Route path="/productlist" element={<Catalog />} />
+        <Route path="/bundles" element={<BundleCatalog />} />
       </Routes>
       <Footer />
 

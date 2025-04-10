@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "Productimage")
+@Table(name = "ProductImage")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,6 +24,6 @@ public class ProductImage {
     @Column(name = "ImageURL", nullable = false)
     private String imageUrl;
 
-    @Column(nullable = false)
+    @Column(name = "Name", nullable = false)
     private String name;
 }

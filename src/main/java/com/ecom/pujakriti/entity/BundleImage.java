@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "Bundlelmage") // Note: Fix typo in table name if needed
+@Table(name = "BundleImage")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,6 +24,6 @@ public class BundleImage {
     @Column(name = "ImageURL", nullable = false)
     private String imageUrl;
 
-    @Column(nullable = false)
+    @Column(name = "Name", nullable = false)
     private String name;
 }

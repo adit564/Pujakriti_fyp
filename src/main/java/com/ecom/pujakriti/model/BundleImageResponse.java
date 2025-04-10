@@ -1,9 +1,5 @@
 package com.ecom.pujakriti.model;
 
-
-import com.ecom.pujakriti.entity.Guide;
-import com.ecom.pujakriti.entity.Puja;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,11 +9,13 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class BundleResponse {
+public class BundleImageResponse {
+    private Integer imageId;
+
     private Integer bundleId;
+
+    private String imageUrl;
+
     private String name;
-    private String description;
-    private Double price;
-    private String guide;
-    private String puja;
+
 }

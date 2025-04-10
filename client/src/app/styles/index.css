@@ -1,72 +1,73 @@
-body{
-    font-family: 'helvetica_neueregular';
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    overflow-x: hidden;
-    color: #131313;
-    background: #f8f8f8;
+body {
+  font-family: "helvetica_neueregular";
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  color: #131313;
+  background: #f8f8f8;
 }
 
-
-::-webkit-scrollbar{
-    width: 0.25vw;
+::-webkit-scrollbar {
+  width: 0.25vw;
 }
 
-::-webkit-scrollbar-thumb{
-    background: #131313;
-    border-radius: 10px;
+::-webkit-scrollbar-thumb {
+  background: #131313;
+  border-radius: 10px;
 }
-::-webkit-scrollbar-track{
-    background: none;
-}
-
-
-footer{
-    padding: 5vh 4vw 10vh 4vw;
-    display: flex;
-    justify-content: space-between;
-    position: relative;
-    background: #EDEDED;
+::-webkit-scrollbar-track {
+  background: none;
 }
 
-.footer_logo{
-    font-size: 1.5vw;
-    font-weight: 600;
+footer {
+  padding: 5vh 4vw 10vh 4vw;
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  background: #ededed;
 }
 
-footer .footer_nav{
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    column-gap: 2vw;
-    row-gap:2vh;
+.footer_logo {
+  font-size: 1.5vw;
+  font-weight: 600;
 }
 
-.footer_links{
-    margin-right: 10vw;
-    display: flex;
-    gap: 5vw;
+footer .footer_nav {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 2vw;
+  row-gap: 2vh;
 }
 
-footer .quick_links{
-    display: flex;
-    flex-direction: column;
-    gap: 2vh;
+.footer_links {
+  margin-right: 10vw;
+  display: flex;
+  gap: 5vw;
+}
+
+footer .quick_links {
+  display: flex;
+  flex-direction: column;
+  gap: 2vh;
 }
 
 footer a,
-.footer_copyright{
-    font-size: 0.8vw;
-    text-decoration: none;
-    color: #131313;
-    padding: 1vh 0.5vw;
-    border-radius: 0.5vw;
-    background-color: #FDFDFD;
-    width: max-content;
-    font-weight: 600;
-    
+.footer_copyright {
+  font-size: 0.7vw;
+  text-decoration: none;
+  color: #131313;
+  padding: 1vh 0.5vw;
+  border-radius: 0.5vw;
+  background-color: #fdfdfd;
+  width: max-content;
+  font-weight: 600;
 }
 
-.footer_copyright{
-    margin-bottom: -5vh;
+footer a:hover{
+    text-decoration: underline;
+}
+
+.footer_copyright {
+  margin-bottom: -5vh;
 }

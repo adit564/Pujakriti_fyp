@@ -76,6 +76,23 @@ CREATE TABLE IF NOT EXISTS FAQ (
                                    Answer TEXT NOT NULL
 );
 
+-- 9. ProductImage Table
+CREATE TABLE IF NOT EXISTS ProductImage (
+                                            ImageID INT AUTO_INCREMENT PRIMARY KEY,
+                                            ProductID INT,
+                                            ImageURL VARCHAR(255),
+    Name VARCHAR(255),
+    FOREIGN KEY (ProductID) REFERENCES Product(ProductID)
+);
+
+-- 10. BundleImage Table
+CREATE TABLE IF NOT EXISTS BundleImage (
+                                           ImageID INT AUTO_INCREMENT PRIMARY KEY,
+                                           BundleID INT,
+                                           ImageURL VARCHAR(255),
+    Name VARCHAR(255),
+    FOREIGN KEY (BundleID) REFERENCES Bundle(BundleID)
+);
 
 -- 1. Seed Data for User (Admin Account)
 INSERT INTO User (UserID, Name, Password, Phone, Email, Role, CreatedAt, IsActive)
@@ -183,3 +200,35 @@ VALUES
     (8, 'Are products made in Nepal?', 'Most of our items are locally sourced.'),
     (9, 'Do you sell original rudrakshas?', 'Yes, our rudrakshas are verified and original.'),
     (10, 'Is COD available?', 'Yes, Cash on Delivery is available in select areas.');
+
+
+INSERT INTO ProductImage (ImageID, ProductID, ImageURL, Name)
+VALUES
+(1, 1, 'brassdiya_1.jpg', 'Brass Diya'),
+(2, 2, 'rudrakshamala_2.jpg', 'Rudraksha Mala'),
+(3, 3, 'sandalwoodincense_3.jpg', 'Sandalwood Incense'),
+(4, 4, 'copperpujathali_4.jpg', 'Copper Puja Thali'),
+(5, 5, 'janeuthread_5.jpg', 'Janeu Thread'),
+(6, 6, 'bhagavadgita_6.jpg', 'Bhagavad Gita'),
+(7, 7, 'purecamphor_7.jpg', 'Pure Camphor'),
+(8, 8, 'woolenprayermat_8.jpg', 'Woolen Prayer Mat'),
+(9, 9, 'brassbell_9.jpg', 'Brass Bell'),
+(10, 10, 'dryfruitbox_10.jpg', 'Dry Fruit Box'),
+(11, 11, 'kalash_11.jpg', 'Kalash'),
+(12, 12, 'laddupack_12.jpg', 'Laddu Pack'),
+(13, 13, 'tulsimala_13.jpg', 'Tulsi Mala'),
+(14, 14, 'ricegrainsakshata_14.jpg', 'Rice Grains (Akshata)'),
+(15, 15, 'panchpatraset_15.jpg', 'Panchpatra Set');
+
+
+INSERT INTO BundleImage (ImageID, BundleID, ImageURL, Name) VALUES
+(1, 1, 'lakshmipujakit_1.jpg', 'Lakshmi Puja Kit'),
+(2, 2, 'grihapraveshkit_2.jpg', 'Griha Pravesh Kit'),
+(3, 3, 'saraswatikit_3.jpg', 'Saraswati Kit'),
+(4, 4, 'ganeshchaturthikit_4.jpg', 'Ganesh Chaturthi Kit'),
+(5, 5, 'navratrikit_5.jpg', 'Navratri Kit'),
+(6, 6, 'satyanarayankit_6.jpg', 'Satyanarayan Kit'),
+(7, 7, 'durgapujakit_7.jpg', 'Durga Puja Kit'),
+(8, 8, 'hanumankit_8.jpg', 'Hanuman Kit'),
+(9, 9, 'rakhiritualskit_9.jpg', 'Rakhi Rituals Kit'),
+(10, 10, 'shraddhakit_10.jpg', 'Shraddha Kit');

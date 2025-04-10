@@ -40,6 +40,10 @@
   padding: 0.2vh 0.5vw;
 }
 
+.left_menu a:hover {
+  text-decoration: underline;
+}
+
 .right_menu {
   gap: 0.25vw;
 }

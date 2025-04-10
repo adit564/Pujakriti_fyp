@@ -7,7 +7,7 @@ export default function Navbar() {
         <a href="/">Home</a>
         <a href="#">About</a>
         <a href="/productlist">Products</a>
-        <a href="#">Bundles</a>
+        <a href="/bundles">Bundles</a>
         <a href="#">Contact</a>
       </div>
       <span className="logo">Pujakriti.</span>

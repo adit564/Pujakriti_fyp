@@ -29,6 +29,27 @@
     margin-top: -1vh;
   }
 
+
+  .product_div_container{
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .product_div_container .addToCart{
+    text-decoration: none;
+    width: max-content;
+    font-size: 0.8vw;
+    font-weight: 600;
+    color: #131313;
+    transition: all 0.3s ease;
+    margin: 2vh 0.25vw;
+    padding-left: 0.25vw;
+  }
+
+  .product_div_container .addToCart:hover{
+    text-decoration: underline;
+  }
+
   .product_container {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;

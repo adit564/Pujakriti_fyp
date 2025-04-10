@@ -34,7 +34,7 @@ export default function HomePage() {
         autoPlayInterval={5000}
         blurIntensity={60} // Adjust blur strength as needed
       />
-      
+
       <div className="home_product_page">
         <div className="home_page_links">
           <div className="product_page_link">
@@ -60,43 +60,60 @@ export default function HomePage() {
               collection, combining design, innovation, technology and
               sustainability.
             </span>
+            <div className="newProducts__links">
             <a className="view_all_btn" href="#">
               View all products
             </a>
+            <a className="view_all_bundle" href="#">
+              View all bundles
+            </a>
+            </div>
+
           </div>
 
           <div className="newProducts_container">
-            <a className="product_div" href="#">
-              <img src="/images/productimg.webp" alt="product_img" />
-              <div className="product_details">
-                <span className="productName">Inauguration Diya</span>
-                <span className="productPrice">NPR 2000</span>
-              </div>
-            </a>
-            <a className="product_div" href="#">
-              <img src="/images/productimg.webp" alt="product_img" />
-              <div className="product_details">
-                <span className="productName">Inauguration Diya</span>
-                <span className="productPrice">NPR 2000</span>
-              </div>
-            </a>
-            <a className="product_div" href="#">
-              <img src="/images/productimg.webp" alt="product_img" />
-              <div className="product_details">
-                <span className="productName">Inauguration Diya</span>
-                <span className="productPrice">NPR 2000</span>
-              </div>
-            </a>
-            <a className="product_div" href="#">
-              <img src="/images/productimg.webp" alt="product_img" />
-              <div className="product_details">
-                <span className="productName">Inauguration Diya</span>
-                <span className="productPrice">NPR 2000</span>
-              </div>
-            </a>
+            <div className="homeproduct_div_container">
+              <a className="product_div" href="#">
+                <img src="/images/productimg.webp" alt="product_img" />
+                <div className="product_details">
+                  <span className="productName">Inauguration Diya</span>
+                  <span className="productPrice">NPR 2000</span>
+                </div>
+              </a>
+              <a href="" className="addToCart">Add to cart</a>
+            </div>
+            <div className="homeproduct_div_container">
+              <a className="product_div" href="#">
+                <img src="/images/productimg.webp" alt="product_img" />
+                <div className="product_details">
+                  <span className="productName">Inauguration Diya</span>
+                  <span className="productPrice">NPR 2000</span>
+                </div>
+              </a>
+              <a href="" className="addToCart">Add to cart</a>
+            </div>
+            <div className="homeproduct_div_container">
+              <a className="product_div" href="#">
+                <img src="/images/productimg.webp" alt="product_img" />
+                <div className="product_details">
+                  <span className="productName">Inauguration Diya</span>
+                  <span className="productPrice">NPR 2000</span>
+                </div>
+              </a>
+              <a href="" className="addToCart">Add to cart</a>
+            </div>
+            <div className="homeproduct_div_container">
+              <a className="product_div" href="#">
+                <img src="/images/productimg.webp" alt="product_img" />
+                <div className="product_details">
+                  <span className="productName">Inauguration Diya</span>
+                  <span className="productPrice">NPR 2000</span>
+                </div>
+              </a>
+              <a href="" className="addToCart">Add to cart</a>
+            </div>
           </div>
         </div>
-
       </div>
 
       <div className="home_About">
@@ -127,9 +144,6 @@ export default function HomePage() {
           <img src="/images/bg_img.jpg" alt="pooja" />
         </div>
       </div>
-
-    
-
     </div>
   );
 }
