@@ -10,5 +10,63 @@ body{
 
 
 ::-webkit-scrollbar{
-    width: 0vw;
+    width: 0.25vw;
+}
+
+::-webkit-scrollbar-thumb{
+    background: #131313;
+    border-radius: 10px;
+}
+::-webkit-scrollbar-track{
+    background: none;
+}
+
+
+footer{
+    padding: 5vh 4vw 10vh 4vw;
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    background: #EDEDED;
+}
+
+.footer_logo{
+    font-size: 1.5vw;
+    font-weight: 600;
+}
+
+footer .footer_nav{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 2vw;
+    row-gap:2vh;
+}
+
+.footer_links{
+    margin-right: 10vw;
+    display: flex;
+    gap: 5vw;
+}
+
+footer .quick_links{
+    display: flex;
+    flex-direction: column;
+    gap: 2vh;
+}
+
+footer a,
+.footer_copyright{
+    font-size: 0.8vw;
+    text-decoration: none;
+    color: #131313;
+    padding: 1vh 0.5vw;
+    border-radius: 0.5vw;
+    background-color: #FDFDFD;
+    width: max-content;
+    font-weight: 600;
+    
+}
+
+.footer_copyright{
+    margin-bottom: -5vh;
 }

@@ -6,7 +6,7 @@ export default function Catalog() {
   const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
-    fetch("http://localhost:8081/api/products")
+    fetch("http://localhost:8081/api/products?page=0&size=15&sort=productId&order=asc")
       .then((response) => response.json())
       .then((data) => {
         // console.log(data);

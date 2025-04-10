@@ -1,6 +1,6 @@
 .carousel-container {
   position: relative;
-  width: 105vw;
+  width: 100vw;
   height: 100vh;
   overflow: hidden;
 }
@@ -143,3 +143,36 @@
 .dot:hover {
   background: rgba(255, 255, 255, 0.8);
 }
+
+
+/* Extra small devices (phones, 600px and down) */
+@media only screen and (max-width: 600px) {}
+
+/* Small devices (portrait tablets and large phones, 600px and up) */
+@media only screen and (min-width: 600px) {}
+
+/* Medium devices (landscape tablets, 768px and up) */
+@media only screen and (min-width: 768px) {}
+
+/* Large devices (laptops/desktops, 992px and up) */
+@media only screen and (min-width: 992px) {
+  .carousel-items {
+    width: 80%;
+    height: 70%;
+  }
+
+  .carousel-caption h3 {
+    font-size: 2vw;
+  }
+
+  .carousel-video {
+    border-radius: 1vw;
+  }
+  
+  .carousel-dots {
+    bottom: 5%;
+  }
+}
+
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1200px) {}

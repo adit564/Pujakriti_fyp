@@ -6,6 +6,7 @@ import HomePage from "../../features/Home/homePage.tsx";
 import Navbar from "./navbar.tsx";
 import { Route, Routes } from "react-router-dom";
 import Catalog from "../../features/catalog/catalog.tsx";
+import Footer from "./footer.tsx";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
       <Route path="/" element={<HomePage />} />
         <Route path="/productlist" element={<Catalog />} />
       </Routes>
+      <Footer />
 
       {/* <Catalog/> */}
     </>

@@ -127,6 +127,9 @@ export default function HomePage() {
           <img src="/images/bg_img.jpg" alt="pooja" />
         </div>
       </div>
+
+    
+
     </div>
   );
 }
