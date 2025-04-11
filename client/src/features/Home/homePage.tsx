@@ -1,7 +1,47 @@
 import Carousel from "../../features/carousel/carousel.tsx";
 import "../../app/styles/homePage.css";
+import { useState, useEffect } from "react";
+import { Product } from "../../app/models/product.ts";
 
 export default function HomePage() {
+
+  interface ProductImage {
+    imageId: number;
+    productId: number;
+    imageUrl: string;
+    name: string;
+  }
+
+  const [products, setProducts] = useState<Product[]>([]);
+  const [productImages, setProductImages] = useState<ProductImage[]>([]);
+
+  useEffect(() => {
+    fetch(
+      "http://localhost:8081/api/products?page=0&size=4&sort=productId&order=asc"
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        setProducts(data.content);
+      })
+      .catch((error) => {
+        console.error("Error fetching products:", error);
+      });
+  }, []);
+
+  useEffect(() => {
+    fetch(
+      "http://localhost:8081/api/images/productImages?page=0&size=15&sort=imageId&order=asc"
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        setProductImages(data.content);
+      })
+      .catch((error) => {
+        console.error("Error fetching product Images:", error);
+      });
+  }
+    , []);
+
   const carouselItems = [
     {
       id: 1,
@@ -61,18 +101,48 @@ export default function HomePage() {
               sustainability.
             </span>
             <div className="newProducts__links">
-            <a className="view_all_btn" href="#">
-              View all products
-            </a>
-            <a className="view_all_bundle" href="#">
-              View all bundles
-            </a>
+              <a className="view_all_btn" href="#">
+                View all products
+              </a>
+              <a className="view_all_bundle" href="#">
+                View all bundles
+              </a>
             </div>
 
           </div>
 
           <div className="newProducts_container">
-            <div className="homeproduct_div_container">
+
+          {products.map((product) => {
+            const productImage = productImages.find(
+              (image) => image.productId === product.productId
+            );
+
+            const imageUrl = productImage
+              ? productImage.imageUrl
+              : "/images/products_image.jpg"; // Use a default image if not found
+
+            const fileName = "/images/product_img/" + imageUrl;
+
+            return(
+            <div className="homeproduct_div_container" key={product.productId}>
+              <a className="product_div" href="#">
+                                <img
+                    src={fileName}
+                    alt={productImage?.name || "product_img"}
+                  />
+                <div className="product_details">
+                  <span className="productName">{product.name}</span>
+                  <span className="productPrice">NPR {product.price}</span>
+                </div>
+              </a>
+              <a href="#" className="addToCart">Add to cart</a>
+            </div>
+          )
+          })}
+
+
+            {/* <div className="homeproduct_div_container">
               <a className="product_div" href="#">
                 <img src="/images/productimg.webp" alt="product_img" />
                 <div className="product_details">
@@ -101,17 +171,7 @@ export default function HomePage() {
                 </div>
               </a>
               <a href="" className="addToCart">Add to cart</a>
-            </div>
-            <div className="homeproduct_div_container">
-              <a className="product_div" href="#">
-                <img src="/images/productimg.webp" alt="product_img" />
-                <div className="product_details">
-                  <span className="productName">Inauguration Diya</span>
-                  <span className="productPrice">NPR 2000</span>
-                </div>
-              </a>
-              <a href="" className="addToCart">Add to cart</a>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
