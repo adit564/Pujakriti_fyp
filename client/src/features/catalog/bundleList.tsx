@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Bundle } from "../../app/models/bundle";
 import "../../app/styles/productLists.css";
+import { Link } from "react-router-dom";
 
 interface Props {
   bundles: Bundle[];
@@ -55,7 +56,7 @@ export default function BundleList({ bundles }: Props) {
 
             return (
               <div className="product_div_container" key={bundle.bundleId}>
-                <a className="product_div" href="#">
+                <Link className="product_div" to={`/bundle/${bundle.bundleId}`}>
                 <img
                     src={fileName}
                     alt={bundleImage?.name || "bundle_img"}
@@ -64,7 +65,7 @@ export default function BundleList({ bundles }: Props) {
                     <span className="productName">{bundle.name}</span>
                     <span className="productPrice">NPR {bundle.price}</span>
                   </div>
-                </a>
+                </Link>
                 <a href="#" className="addToCart">
                   Add to cart
                 </a>

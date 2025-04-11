@@ -8,7 +8,7 @@
 }
 
 .logo {
-  position: fixed;
+  position: absolute;
   top: 3.5%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -27,7 +27,7 @@
 
 .menu a {
   text-decoration: none;
-  font-size: 0.7vw;
+  font-size: 0.8vw;
   color: #131313;
   font-weight: 600;
 }

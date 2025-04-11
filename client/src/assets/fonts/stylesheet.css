@@ -29,7 +29,14 @@
 
 }
 
+@font-face {
+    font-family: 'helvetica_neuemedium';
+    src: url('helveticaneuemedium-webfont.woff2') format('woff2'),
+         url('helveticaneuemedium-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
 
+}
 
 
 @font-face {

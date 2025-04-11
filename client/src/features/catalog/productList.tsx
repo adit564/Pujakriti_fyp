@@ -1,6 +1,7 @@
 import {useEffect, useState } from "react";
 import { Product } from "../../app/models/product";
 import "../../app/styles/productLists.css";
+import { Link } from "react-router-dom";
 // import ProductCard from "./productCard";
 
 interface Props {
@@ -57,7 +58,7 @@ export default function ProductList({ products }: Props) {
 
             return (
               <div className="product_div_container" key={product.productId}>
-                <a className="product_div" href="#">
+                  <Link className="product_div" to={`/product/${product.productId}`}>
                   <img
                     src={fileName}
                     alt={productImage?.name || "product_img"}
@@ -66,7 +67,7 @@ export default function ProductList({ products }: Props) {
                     <span className="productName">{product.name}</span>
                     <span className="productPrice">NPR {product.price}</span>
                   </div>
-                </a>
+                  </Link>
                 <a href="#" className="addToCart">
                   Add to cart
                 </a>

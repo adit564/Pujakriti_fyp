@@ -2,6 +2,7 @@ import Carousel from "../../features/carousel/carousel.tsx";
 import "../../app/styles/homePage.css";
 import { useState, useEffect } from "react";
 import { Product } from "../../app/models/product.ts";
+import { Link } from "react-router-dom";
 
 export default function HomePage() {
 
@@ -79,13 +80,13 @@ export default function HomePage() {
         <div className="home_page_links">
           <div className="product_page_link">
             <img src="/images/products_image.jpg" alt="products_image" />
-            <a className="page_link" href="#">
+            <a className="page_link" href="/products">
               View Products
             </a>
           </div>
           <div className="product_page_link">
             <img src="/images/bundle_image.jpg" alt="bundle_image" />
-            <a className="page_link" href="#">
+            <a className="page_link" href="/bundles">
               View Bundles
             </a>
           </div>
@@ -101,10 +102,10 @@ export default function HomePage() {
               sustainability.
             </span>
             <div className="newProducts__links">
-              <a className="view_all_btn" href="#">
+              <a className="view_all_btn" href="/products">
                 View all products
               </a>
-              <a className="view_all_bundle" href="#">
+              <a className="view_all_bundle" href="/bundles">
                 View all bundles
               </a>
             </div>
@@ -126,7 +127,7 @@ export default function HomePage() {
 
             return(
             <div className="homeproduct_div_container" key={product.productId}>
-              <a className="product_div" href="#">
+              <Link className="product_div" to={`/product/${product.productId}`}>
                                 <img
                     src={fileName}
                     alt={productImage?.name || "product_img"}
@@ -135,43 +136,12 @@ export default function HomePage() {
                   <span className="productName">{product.name}</span>
                   <span className="productPrice">NPR {product.price}</span>
                 </div>
-              </a>
+              </Link>
               <a href="#" className="addToCart">Add to cart</a>
             </div>
           )
           })}
 
-
-            {/* <div className="homeproduct_div_container">
-              <a className="product_div" href="#">
-                <img src="/images/productimg.webp" alt="product_img" />
-                <div className="product_details">
-                  <span className="productName">Inauguration Diya</span>
-                  <span className="productPrice">NPR 2000</span>
-                </div>
-              </a>
-              <a href="" className="addToCart">Add to cart</a>
-            </div>
-            <div className="homeproduct_div_container">
-              <a className="product_div" href="#">
-                <img src="/images/productimg.webp" alt="product_img" />
-                <div className="product_details">
-                  <span className="productName">Inauguration Diya</span>
-                  <span className="productPrice">NPR 2000</span>
-                </div>
-              </a>
-              <a href="" className="addToCart">Add to cart</a>
-            </div>
-            <div className="homeproduct_div_container">
-              <a className="product_div" href="#">
-                <img src="/images/productimg.webp" alt="product_img" />
-                <div className="product_details">
-                  <span className="productName">Inauguration Diya</span>
-                  <span className="productPrice">NPR 2000</span>
-                </div>
-              </a>
-              <a href="" className="addToCart">Add to cart</a>
-            </div> */}
           </div>
         </div>
       </div>
