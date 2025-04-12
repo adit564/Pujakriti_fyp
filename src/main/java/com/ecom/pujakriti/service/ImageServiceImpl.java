@@ -27,33 +27,42 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public ProductImageResponse getProductImageByProductId(Integer id) {
-        log.info("Fetching product image by id: " + id);
+        log.info("Fetching product image by id: {}", id);
         ProductImage productImage = productImageRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product Image not found"));
+                .orElseThrow(() -> new RuntimeException("Product image not found"));
         return convertToProductImageResponse(productImage);
     }
 
     @Override
     public BundleImageResponse getBundleImageByBundleId(Integer id) {
-        log.info("Fetching bundle image by id: " + id);
-        BundleImage bundleImage = bundleImageRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product Image not found"));
+        log.info("Fetching bundle image by id: {}", id);
+        BundleImage bundleImage = bundleImageRepository.findByBundle_BundleId(id)
+                .orElseThrow(() -> new RuntimeException("Bundle image not found"));
         return convertToBundleImageResponse(bundleImage);
     }
 
     @Override
-    public Page<ProductImageResponse> getProductImages(Pageable pageable, String keyword) {
+    public Page<ProductImageResponse> getProductImages(Pageable pageable, Integer productId, String keyword) {
         log.info("Fetching product images");
         Specification<ProductImage> spec = Specification.where(null);
+
+        if (productId != null) {
+            spec = spec.and((root, criteriaQuery, criteriaBuilder) -> criteriaBuilder.equal(root.get("product").get("productId"), productId));
+        }
+
         return productImageRepository.findAll(spec,pageable).map(this::convertToProductImageResponse);
     }
 
 
 
     @Override
-    public Page<BundleImageResponse> getBundleImages(Pageable pageable, String keyword) {
+    public Page<BundleImageResponse> getBundleImages(Pageable pageable, Integer bundleId, String keyword) {
         log.info("Fetching bundle images");
         Specification<BundleImage> spec = Specification.where(null);
+
+        if (bundleId != null) {
+            spec = spec.and((root, criteriaQuery, criteriaBuilder) -> criteriaBuilder.equal(root.get("bundle").get("bundleId"), bundleId));
+        }
         return bundleImageRepository.findAll(spec,pageable).map(this::convertToBundleImageResponse);
     }
 

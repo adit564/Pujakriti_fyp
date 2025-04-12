@@ -1,23 +1,21 @@
 import { useEffect, useState } from "react";
 import { Bundle } from "../../app/models/bundle";
 import BundleList from "./bundleList";
+import agent from "../../app/api/agent";
+import NotFoundError from "../../app/errors/NotFoundError";
+import Spinner from "../../app/layout/spinner";
 
 export default function BundleCatalog() {
   const [bundles, setBundles] = useState<Bundle[]>([]);
-
-  useEffect(() => {
-    fetch(
-      "http://localhost:8081/api/bundles?page=0&size=10&sort=bundleId&order=asc"
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        // console.log(data);
-        setBundles(data.content);
-      })
-      .catch((error) => {
-        console.error("Error fetching bundles:", error);
-      });
+  const [loading, setLoading] = useState(true);
+useEffect(() => {
+    agent.BundleList.list()
+      .then((bundles) => setBundles(bundles.content))
+      .catch((error) => console.error("Error fetching bundles:", error))
+      .finally(() => setLoading(false));
   }, []);
 
+  if(!bundles) return <NotFoundError />;
+  if (loading) return <Spinner message="Loading bundles..." />;
   return <BundleList bundles={bundles} />;
 }

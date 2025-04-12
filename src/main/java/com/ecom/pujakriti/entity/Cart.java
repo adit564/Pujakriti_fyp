@@ -1,29 +1,27 @@
 package com.ecom.pujakriti.entity;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.redis.core.RedisHash;
 
 import java.util.List;
 
-@Entity
-@Table(name = "Cart")
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@RedisHash("Cart")
 public class Cart {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "CartID")
-    private Integer cartId;
+    @Schema(description = "Cart ID")
+    private String id;
 
-    @OneToOne
-    @JoinColumn(name = "UserID", nullable = false)
-    private User user;
+    private Integer userId;
 
-    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<CartItem> cartItems;
+
+    public Cart(String id){
+        this.id = id;
+    }
+
 }

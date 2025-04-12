@@ -10,7 +10,6 @@ export default function Footer() {
                 <a href="#">Bundles</a>
                 <br />
                 <p className="footer_copyright">© 2025 Pujakriti. All rights reserved.</p>
-
             </div>
 
             <div className="footer_links">

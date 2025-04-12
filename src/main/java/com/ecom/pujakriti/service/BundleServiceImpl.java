@@ -57,6 +57,7 @@ public class BundleServiceImpl implements BundleService {
                 .name(bundle.getName())
                 .description(bundle.getDescription())
                 .price(bundle.getPrice())
+                .stock(bundle.getStock())
                 .guide(bundle.getGuide().getName())
                 .puja(bundle.getPuja().getName())
                 .build();

@@ -1,21 +1,20 @@
 package com.ecom.pujakriti.model;
 
-import com.ecom.pujakriti.entity.CartItem;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
-
-
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CartResponse {
-    private String cartId;
-    private Integer userId;
-    private List<CartItemResponse> cartItems;
+public class CartItemResponse {
+    private Integer cartItemId;
+
+    private Integer productId;
+
+    private Integer bundleId;
+
+    private Integer quantity;
 }

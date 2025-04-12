@@ -63,6 +63,7 @@ CREATE TABLE IF NOT EXISTS Bundle (
                                       Name VARCHAR(255) NOT NULL,
     Description TEXT,
     Price DECIMAL(10, 2) NOT NULL,
+    Stock INT NOT NULL,
     GuideID INT,
     PujaID INT,
     FOREIGN KEY (GuideID) REFERENCES Guide(GuideID),
@@ -174,18 +175,18 @@ VALUES
     (10, 'Shraddha Guide', 'Annual rituals for ancestors', 'Full procedure...', 10);
 
 -- 7. Seed Data for Bundle
-INSERT INTO Bundle (BundleID, Name, Description, Price, GuideID, PujaID)
+INSERT INTO Bundle (BundleID, Name, Description, Price, Stock, GuideID, PujaID)
 VALUES
-    (1, 'Lakshmi Puja Kit', 'Complete puja essentials for Lakshmi Puja', 1000, 2, 2),
-    (2, 'Griha Pravesh Kit', 'Complete puja essentials for Griha Pravesh', 1500, 1, 1),
-    (3, 'Saraswati Kit', 'Kit for education puja', 900, 3, 3),
-    (4, 'Ganesh Chaturthi Kit', 'Everything for Ganesh puja', 1300, 4, 4),
-    (5, 'Navratri Kit', '9-day ritual combo pack', 1800, 5, 5),
-    (6, 'Satyanarayan Kit', 'Monthly puja pack', 1200, 6, 6),
-    (7, 'Durga Puja Kit', 'Durga Puja essentials', 2000, 7, 7),
-    (8, 'Hanuman Kit', 'Special Hanuman Jayanti pack', 1100, 8, 8),
-    (9, 'Rakhi Rituals Kit', 'All items for Raksha Bandhan', 850, 9, 9),
-    (10, 'Shraddha Kit', 'Items for Shraddha puja', 950, 10, 10);
+    (1, 'Lakshmi Puja Kit', 'Complete puja essentials for Lakshmi Puja', 1000, 20, 2, 2),
+    (2, 'Griha Pravesh Kit', 'Complete puja essentials for Griha Pravesh', 1500, 15, 1, 1),
+    (3, 'Saraswati Kit', 'Kit for education puja', 900,24, 3, 3),
+    (4, 'Ganesh Chaturthi Kit', 'Everything for Ganesh puja', 1300, 12, 4, 4),
+    (5, 'Navratri Kit', '9-day ritual combo pack', 1800, 29, 5, 5),
+    (6, 'Satyanarayan Kit', 'Monthly puja pack', 1200, 30, 6, 6),
+    (7, 'Durga Puja Kit', 'Durga Puja essentials', 2000, 11, 7, 7),
+    (8, 'Hanuman Kit', 'Special Hanuman Jayanti pack', 1100, 19,8, 8),
+    (9, 'Rakhi Rituals Kit', 'All items for Raksha Bandhan', 850, 31, 9, 9),
+    (10, 'Shraddha Kit', 'Items for Shraddha puja', 950, 23,10, 10);
 
 -- 8. Seed Data for FAQ
 INSERT INTO FAQ (FAQID, Question, Answer)

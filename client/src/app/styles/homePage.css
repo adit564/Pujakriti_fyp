@@ -40,7 +40,7 @@
   padding: 1vh 2vw;
   border-radius: 0.5vw;
   backdrop-filter: blur(5px);
-  font-size: 1.25vw;
+  font-size: 1vw;
   text-decoration: none;
   color: #131313;
   transition: all 0.3s ease;
@@ -98,7 +98,7 @@
   color: #fff;
   text-decoration: none;
   padding: 0.5vh 1vw;
-  border-radius: 0.5vw;
+  border-radius: 0.25vw;
   background-color: #131313;
   transition: all 0.3s ease;
   margin: 2vh 0;
@@ -110,7 +110,7 @@
   color: #131313;
   text-decoration: none;
   padding: 0.5vh 1vw;
-  border-radius: 0.5vw;
+  border-radius: 0.25vw;
   background-color: #fdfdfd;
   transition: all 0.3s ease;
   margin: 2vh 0;

@@ -5,24 +5,16 @@ import "../styles/app.css";
 import Navbar from "./navbar.tsx";
 import Footer from "./footer.tsx";
 import { Outlet } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   return (
     <>
+    <ToastContainer position="bottom-left" hideProgressBar theme="dark" />
       <Navbar />
-
-      {/* <Routes>
-      <Route path="/" element={<HomePage />} />
-        <Route path="/productlist" element={<Catalog />} />
-        <Route path="/bundles" element={<BundleCatalog />} />
-      </Routes> */}
-
       <Outlet />
-
-
       <Footer />
-
-      {/* <Catalog/> */}
     </>
   );
 }

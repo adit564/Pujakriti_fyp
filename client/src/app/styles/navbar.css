@@ -1,9 +1,9 @@
 .navbar {
   position: fixed;
-  width: 98vw;
+  width: 96vw;
   display: flex;
   justify-content: space-between;
-  padding: 2vh 1vw;
+  padding: 2vh 2vw;
   z-index: 3;
 }
 

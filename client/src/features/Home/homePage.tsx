@@ -18,7 +18,7 @@ export default function HomePage() {
 
   useEffect(() => {
     fetch(
-      "http://localhost:8081/api/products?page=0&size=4&sort=productId&order=asc"
+      "http://localhost:8081/api/products?page=0&size=4&sort=productId&order=desc"
     )
       .then((response) => response.json())
       .then((data) => {

@@ -1,37 +1,20 @@
 package com.ecom.pujakriti.entity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.redis.core.RedisHash;
 
-@Entity
-@Table(name = "Cartitem")
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@RedisHash("CartItem")
 public class CartItem {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "CartitemID")
-    private Integer cartItemId;
+    private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "CartID", nullable = false)
-    private Cart cart;
+    private Integer productId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ProductID")
-    private Product product;
+    private Integer bundleId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "BundleID")
-    private Bundle bundle;
-
-    @Column(nullable = false)
     private Integer quantity;
 
-    @Column(nullable = false)
-    private Double price;
 }

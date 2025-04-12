@@ -27,6 +27,9 @@ public class Bundle {
     @Column(name = "Price", nullable = false)
     private Double price;
 
+    @Column(name = "Stock", nullable = false)
+    private Integer stock;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "GuideID")
     private Guide guide;

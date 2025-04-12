@@ -1,6 +1,7 @@
 package com.ecom.pujakriti.service;
 
 import com.ecom.pujakriti.entity.Product;
+import com.ecom.pujakriti.exceptions.ProductNotFoundException;
 import com.ecom.pujakriti.model.ProductResponse;
 import com.ecom.pujakriti.repository.ProductRepository;
 import lombok.extern.log4j.Log4j2;
@@ -25,7 +26,7 @@ public class ProductServiceImpl implements ProductService {
     public ProductResponse getProductById(Integer id) {
         log.info("Fetching product with id {}", id);
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new ProductNotFoundException("Product not found"));
         log.info("Product fetched successfully");
         return convertToProductResponse(product);
     }
@@ -55,6 +56,7 @@ public class ProductServiceImpl implements ProductService {
                 .description(product.getDescription())
                 .price(product.getPrice())
                 .category(product.getCategory().getName())
+                .stock(product.getStock())
                 .build();
     }
 }

@@ -2,7 +2,7 @@ import {useEffect, useState } from "react";
 import { Product } from "../../app/models/product";
 import "../../app/styles/productLists.css";
 import { Link } from "react-router-dom";
-// import ProductCard from "./productCard";
+import agent from "../../app/api/agent";
 
 interface Props {
   products: Product[];
@@ -18,18 +18,13 @@ interface ProductImage {
 export default function ProductList({ products }: Props) {
   const [productImages, setProductImages] = useState<ProductImage[]>([]);
 
+
   useEffect(() => {
-    fetch(
-      "http://localhost:8081/api/images/productImages?page=0&size=15&sort=imageId&order=asc"
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        setProductImages(data.content);
-      })
-      .catch((error) => {
-        console.error("Error fetching product Images:", error);
-      });
+    agent.ProductImages.list()
+      .then((images) => setProductImages(images.content))
+      .catch((error) => console.error("Error fetching product Images:", error));
   }, []);
+
 
   return (
     <>
@@ -76,6 +71,7 @@ export default function ProductList({ products }: Props) {
           })}
         </div>
       </div>
+      
     </>
   );
 }

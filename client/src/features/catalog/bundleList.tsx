@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Bundle } from "../../app/models/bundle";
 import "../../app/styles/productLists.css";
 import { Link } from "react-router-dom";
+import agent from "../../app/api/agent";
 
 interface Props {
   bundles: Bundle[];
@@ -18,22 +19,15 @@ export default function BundleList({ bundles }: Props) {
   const [bundleImages, setBundleImages] = useState<BundleImage[]>([]);
 
   useEffect(() => {
-    fetch(
-      "http://localhost:8081/api/images/bundlesImages?page=0&size=10&sort=imageId&order=asc"
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        setBundleImages(data.content);
-      })
-      .catch((error) => {
-        console.error("Error fetching bundle Images:", error);
-      });
+    agent.BundleImages.list()
+      .then((images) => setBundleImages(images.content))
+      .catch((error) => console.error("Error fetching bundle Images:", error));
   }, []);
 
   return (
     <>
-      <div className="products_page">
-        <div className="products_page_header">
+      <div className="bundles_page">
+        <div className="bundles_page_header">
           <span>2025/Bundles</span>
           <span>All Bundles</span>
           <span>
@@ -43,7 +37,7 @@ export default function BundleList({ bundles }: Props) {
           </span>
         </div>
 
-        <div className="product_container">
+        <div className="bundle_container">
           {bundles.map((bundle) => {
             const bundleImage = bundleImages.find(
               (image) => image.bundleId === bundle.bundleId
@@ -55,15 +49,15 @@ export default function BundleList({ bundles }: Props) {
             const fileName = "/images/bundle_img/" + imageUrl;
 
             return (
-              <div className="product_div_container" key={bundle.bundleId}>
-                <Link className="product_div" to={`/bundle/${bundle.bundleId}`}>
+              <div className="bundle_div_container" key={bundle.bundleId}>
+                <Link className="bundle_div" to={`/bundle/${bundle.bundleId}`}>
                 <img
                     src={fileName}
                     alt={bundleImage?.name || "bundle_img"}
                   />
-                  <div className="product_details">
-                    <span className="productName">{bundle.name}</span>
-                    <span className="productPrice">NPR {bundle.price}</span>
+                  <div className="bundle_details">
+                    <span className="bundleName">{bundle.name}</span>
+                    <span className="bundlePrice">NPR {bundle.price}</span>
                   </div>
                 </Link>
                 <a href="#" className="addToCart">

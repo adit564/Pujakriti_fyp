@@ -27,7 +27,7 @@ public class ImageController {
     }
 
 
-    @GetMapping("/productImage/{id}")
+    @GetMapping("/product/{id}")
     public ResponseEntity<ProductImageResponse> getProductImageById(@PathVariable Integer id) {
         try {
             ProductImageResponse response = imageService.getProductImageByProductId(id);
@@ -37,7 +37,7 @@ public class ImageController {
         }
     }
 
-    @GetMapping("/bundleImage/{id}")
+    @GetMapping("/bundle/{id}")
     public ResponseEntity<BundleImageResponse> getBundleImageById(@PathVariable Integer id) {
         try {
             BundleImageResponse response = imageService.getBundleImageByBundleId(id);
@@ -52,13 +52,14 @@ public class ImageController {
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "10") int size,
             @RequestParam(name = "keyword", required = false) String keyword,
+            @RequestParam(name = "product", required = false) Integer productId,
             @RequestParam(name = "sort", defaultValue = "imageId") String sort,
             @RequestParam(name = "order", defaultValue = "asc") String order
     ) {
         Sort.Direction direction = order.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
         Sort sortOrder = Sort.by(direction,sort);
         Pageable pageable = PageRequest.of(page,size,sortOrder);
-        Page<ProductImageResponse> productImages = imageService.getProductImages(pageable, keyword);
+        Page<ProductImageResponse> productImages = imageService.getProductImages(pageable,productId, keyword);
         return new ResponseEntity<>(productImages, HttpStatus.OK);
     }
 
@@ -67,6 +68,7 @@ public class ImageController {
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "10") int size,
             @RequestParam(name = "keyword", required = false) String keyword,
+            @RequestParam(name = "bundle", required = false) Integer bundleId,
             @RequestParam(name = "sort", defaultValue = "imageId") String sort,
             @RequestParam(name = "order", defaultValue = "asc") String order
     ) {
@@ -74,7 +76,7 @@ public class ImageController {
         Sort sortOrder = Sort.by(direction,sort);
         Pageable pageable = PageRequest.of(page,size,sortOrder);
 
-        Page<BundleImageResponse> bundleImages = imageService.getBundleImages(pageable, keyword);
+        Page<BundleImageResponse> bundleImages = imageService.getBundleImages(pageable,bundleId, keyword);
         return new ResponseEntity<>(bundleImages, HttpStatus.OK);
     }
 
