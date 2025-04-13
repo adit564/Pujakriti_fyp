@@ -1,8 +1,10 @@
-import {useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Product } from "../../app/models/product";
 import "../../app/styles/productLists.css";
 import { Link } from "react-router-dom";
 import agent from "../../app/api/agent";
+import { useAppDispatch } from "../../app/store/configureStore";
+import { setCart } from "../cart/cartSlice";
 
 interface Props {
   products: Product[];
@@ -18,6 +20,7 @@ interface ProductImage {
 export default function ProductList({ products }: Props) {
   const [productImages, setProductImages] = useState<ProductImage[]>([]);
 
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     agent.ProductImages.list()
@@ -25,6 +28,23 @@ export default function ProductList({ products }: Props) {
       .catch((error) => console.error("Error fetching product Images:", error));
   }, []);
 
+  const dispatch = useAppDispatch();
+
+  function addItemToCart(product: Product) {
+    console.log("Adding item to cart: ", product);
+    setLoading(true);
+    agent.Cartt.addItem(product,1, dispatch)
+      .then((response) => {
+        console.log("Item added to cart: ", response.cart);
+        dispatch(setCart(response.cart));
+      })
+      .catch((error) => {
+        console.error("Failed to add item to cart: ", error);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }
 
   return (
     <>
@@ -53,7 +73,10 @@ export default function ProductList({ products }: Props) {
 
             return (
               <div className="product_div_container" key={product.productId}>
-                  <Link className="product_div" to={`/product/${product.productId}`}>
+                <Link
+                  className="product_div"
+                  to={`/product/${product.productId}`}
+                >
                   <img
                     src={fileName}
                     alt={productImage?.name || "product_img"}
@@ -62,16 +85,21 @@ export default function ProductList({ products }: Props) {
                     <span className="productName">{product.name}</span>
                     <span className="productPrice">NPR {product.price}</span>
                   </div>
-                  </Link>
-                <a href="#" className="addToCart">
+                </Link>
+                <span
+                  className="addToCart"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    addItemToCart(product);
+                  }}
+                >
                   Add to cart
-                </a>
+                </span>
               </div>
             );
           })}
         </div>
       </div>
-      
     </>
   );
 }

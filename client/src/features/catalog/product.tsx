@@ -1,10 +1,10 @@
-import axios from "axios";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import type { Product } from "../../app/models/product";
 import agent from "../../app/api/agent";
 import NotFoundError from "../../app/errors/NotFoundError";
-import Spinner from "../../app/layout/spinner";
+import { useAppDispatch } from "../../app/store/configureStore";
+import { setCart } from "../cart/cartSlice";
 
 interface ProductImage {
   imageId: number;
@@ -22,37 +22,49 @@ export default function Product() {
 
   const [loading, setLoading] = useState(true);
 
+  const [quantity, setQuantity] = useState(1);
+
+
   useEffect(() => {
     if (productId) {
       const numericId = parseInt(productId);
-      
-      // Combine both API calls
+
       Promise.all([
         agent.ProductsList.get(numericId),
-        agent.ProductImages.get(numericId)
+        agent.ProductImages.get(numericId),
       ])
-      .then(([product, images]) => {
-        setProduct(product);
-        setProductImages(images);
-      })
-      .catch((error) => {
-        console.error("Error fetching product data:", error);
-      })
-      .finally(() => setLoading(false));
+        .then(([product, images]) => {
+          setProduct(product);
+          setProductImages(images);
+        })
+        .catch((error) => {
+          console.error("Error fetching product data:", error);
+        });
     } else {
       console.error("Product ID is undefined");
-      setLoading(false);
     }
   }, [productId]);
 
-  if(loading){
-    console.log("Loading products...");
-    return <Spinner message="Loading products..." />;
-  }else{
-    console.log("Products loaded successfully.");
+
+  const dispatch = useAppDispatch();
+
+  function addItemToCart() {
+    setLoading(true);
+    agent.Cartt.addItem(product,quantity, dispatch)
+    .then(response=>{
+      console.log("Item added to cart: ", response.cart);
+      dispatch(setCart(response.cart));
+    })
+    .catch(error=>{
+      console.error("Failed to add item to cart: ", error);
+    })
+    .finally(()=>{
+      setLoading(false);
+    });
   }
 
   if (!product) return <NotFoundError />;
+
 
   return (
     <>
@@ -78,11 +90,26 @@ export default function Product() {
             <span className="prod_desc">{product.description}</span>
           </div>
           <div className="prod_details_btn">
-            <div className="select_quantity">Quantity</div>
+            <div className="quantity_btn">
+              <span>Quantity</span>
+              <span
+                className="btn"
+                onClick={() => setQuantity((prev) => (prev > 1 ? prev - 1 : 1))}
+              >
+                -
+              </span>
+              <span>{quantity}</span>
+              <span
+                className="btn"
+                onClick={() => setQuantity((prev) => prev + 1)}
+              >
+                +
+              </span>
+            </div>
 
-            <a href="#" className="add_to_cart_">
+            <span className="add_to_cart_" onClick={addItemToCart}>
               Add to Cart
-            </a>
+            </span>
           </div>
         </div>
       </div>

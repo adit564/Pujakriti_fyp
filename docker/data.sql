@@ -95,6 +95,18 @@ CREATE TABLE IF NOT EXISTS BundleImage (
     FOREIGN KEY (BundleID) REFERENCES Bundle(BundleID)
 );
 
+-- 11. DiscountCode Table
+
+CREATE TABLE IF NOT EXISTS DiscountCode (
+                              DiscountID INT AUTO_INCREMENT PRIMARY KEY,
+                              code VARCHAR(255) NOT NULL UNIQUE,
+                              DisRate DOUBLE NOT NULL,
+                              IsActive BOOLEAN DEFAULT TRUE,
+                              ExpiryDate DATE
+);
+
+
+
 -- 1. Seed Data for User (Admin Account)
 INSERT INTO User (UserID, Name, Password, Phone, Email, Role, CreatedAt, IsActive)
 VALUES (1, 'Admin', 'hashed_password', '9800000000', "admin@gmail.com" , 'ADMIN', NOW(), TRUE);
@@ -233,3 +245,25 @@ INSERT INTO BundleImage (ImageID, BundleID, ImageURL, Name) VALUES
 (8, 8, 'hanumankit_8.jpg', 'Hanuman Kit'),
 (9, 9, 'rakhiritualskit_9.jpg', 'Rakhi Rituals Kit'),
 (10, 10, 'shraddhakit_10.jpg', 'Shraddha Kit');
+
+INSERT INTO DiscountCode (code, DisRate, IsActive, ExpiryDate) VALUES
+-- Dashain (September/October)
+('DASHAIN2025', 0.15, TRUE, '2025-10-15'),
+
+-- Tihar (October/November)
+('TIHAR2025', 0.10, TRUE, '2025-11-10'),
+
+-- Chhath (November)
+('CHHATH2025', 0.05, TRUE, '2025-11-20'),
+
+-- Nepali New Year Sankranti
+('MAGHE2025', 0.15, TRUE, '2025-04-20'),
+
+-- Holi (March)
+('HOLI2025', 0.05, TRUE, '2025-03-25'),
+
+-- Buddha Jayanti (May)
+('BUDDHA2025', 0.05, TRUE, '2025-05-15'),
+
+-- Teej (August)
+('TEEJ2025', 0.05, TRUE, '2025-08-30');

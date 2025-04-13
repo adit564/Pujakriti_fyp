@@ -7,7 +7,9 @@ import Product from "../../features/catalog/product";
 import Bundle from "../../features/catalog/bundle";
 import NotFoundError from "../errors/NotFoundError";
 import ServerError from "../errors/ServerError";
-import UnauthorizedError from "../errors/UnAuthorizedError";
+import UnauthorizedError from "../errors/UnauthorizedError";
+import CartPage from "../../features/cart/cartPage";
+import Contact from "../../features/contact/contact";
 
 
 export const router = createBrowserRouter([
@@ -18,8 +20,16 @@ export const router = createBrowserRouter([
             {path:'', element:<HomePage/>},
             {path:'products', element:<Catalog/>},
             {path:'bundles', element:<BundleCatalog/>},
+
+            {path:'cart', element:<CartPage/>}, 
+
+            {path:'contact', element:<Contact/>},
+
             {path:'product/:productId', element:<Product/>},
             {path:'bundle/:bundleId', element:<Bundle/>},
+
+
+
             {path:'not-found', element:<NotFoundError/>},
             {path:'server-error', element:<ServerError/>},
             {path:'unauthorized', element:<UnauthorizedError/>},

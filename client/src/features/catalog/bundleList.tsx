@@ -3,6 +3,8 @@ import { Bundle } from "../../app/models/bundle";
 import "../../app/styles/productLists.css";
 import { Link } from "react-router-dom";
 import agent from "../../app/api/agent";
+import { useAppDispatch } from "../../app/store/configureStore";
+import { setCart } from "../cart/cartSlice";
 
 interface Props {
   bundles: Bundle[];
@@ -17,12 +19,33 @@ interface BundleImage {
 
 export default function BundleList({ bundles }: Props) {
   const [bundleImages, setBundleImages] = useState<BundleImage[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     agent.BundleImages.list()
       .then((images) => setBundleImages(images.content))
       .catch((error) => console.error("Error fetching bundle Images:", error));
   }, []);
+
+
+  const dispatch = useAppDispatch();
+
+  function addItemToCart(bundle: Bundle) {
+    console.log("Adding item to cart: ", bundle);
+    setLoading(true);
+    agent.Cartt.addItem(bundle, 1, dispatch)
+      .then((response) => {
+        console.log("Item added to cart: ", response.cart);
+        dispatch(setCart(response.cart));
+      })
+      .catch((error) => {
+        console.error("Failed to add item to cart: ", error);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }
+
 
   return (
     <>
@@ -60,9 +83,15 @@ export default function BundleList({ bundles }: Props) {
                     <span className="bundlePrice">NPR {bundle.price}</span>
                   </div>
                 </Link>
-                <a href="#" className="addToCart">
+                <span
+                  className="addToCart"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    addItemToCart(bundle);
+                  }}
+                >
                   Add to cart
-                </a>
+                </span>
               </div>
             );
           })}

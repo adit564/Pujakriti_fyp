@@ -50,6 +50,7 @@
   transition: all 0.3s ease;
   margin: 2vh 0.25vw;
   padding-left: 0.25vw;
+  cursor: pointer;
 }
 
 .product_div_container .addToCart:hover,
@@ -166,17 +167,13 @@
   font-size: 1vw;
 }
 
-.select_quantity{
-  padding: 0.5vh 1vw;
-  background-color: #DDDDDF;
-  border-radius: 0.25vw;
-  font-weight: 600;
-}
+
 
 .add_to_cart_{
-  padding: 0.5vh 1vw;
+  padding: 1vh 1vw;
   background-color: #131313;
   color: #fff;
   border-radius: 0.25vw;
   text-decoration: none;
+  cursor: pointer;
 }

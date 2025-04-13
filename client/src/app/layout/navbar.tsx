@@ -1,6 +1,21 @@
+import { NavLink } from "react-router-dom";
 import "../styles/navbar.css";
+import { useAppSelector } from "../store/configureStore";
+import { use, useEffect } from "react";
 
 export default function Navbar() {
+  const { cart } = useAppSelector((state) => state.cart);
+  console.log("Cart: " + cart);
+
+  useEffect(() => {
+    console.log("cart items:", cart?.cartItems);
+  }, [cart]);
+
+  const cartItemsCount = cart?.cartItems?.reduce(
+    (total, item) => total + item.quantity,
+    0
+  ) || 0;
+
   return (
     <>
       <span className="logo">Pujakriti.</span>
@@ -10,7 +25,7 @@ export default function Navbar() {
           <a href="#">About</a>
           <a href="/products">Products</a>
           <a href="/bundles">Bundles</a>
-          <a href="#">Contact</a>
+          <a href="/contact">Contact</a>
         </div>
         <div className="right_menu menu">
           <div className="search_button">
@@ -37,8 +52,7 @@ export default function Navbar() {
               />
             </svg>
           </div>
-          <div className="acc_button">
-            {/* <a href="#">Login</a> */}
+          <NavLink className="acc_button" to={"/login"}>
             <svg
               width="16"
               height="16"
@@ -60,9 +74,8 @@ export default function Navbar() {
                 strokeLinecap="round"
               />
             </svg>
-          </div>
-          <div className="cart_button">
-            {/* <a href="#">Cart</a> */}
+          </NavLink>
+          <NavLink to="/cart" className="cart_button">
             <svg
               width="17"
               height="18"
@@ -86,7 +99,8 @@ export default function Navbar() {
                 strokeLinecap="round"
               />
             </svg>
-          </div>
+            <span className="cart_items">{cartItemsCount}</span>
+          </NavLink>
         </div>
       </div>
     </>
