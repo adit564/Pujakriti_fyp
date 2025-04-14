@@ -1,35 +1,51 @@
 import { NavLink } from "react-router-dom";
 import "../styles/navbar.css";
 import { useAppSelector } from "../store/configureStore";
-import { use, useEffect } from "react";
+import React, { use, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Navbar() {
   const { cart } = useAppSelector((state) => state.cart);
-  console.log("Cart: " + cart);
 
   useEffect(() => {
     console.log("cart items:", cart?.cartItems);
   }, [cart]);
 
-  const cartItemsCount = cart?.cartItems?.reduce(
-    (total, item) => total + item.quantity,
-    0
-  ) || 0;
+  const cartItemsCount =
+    cart?.cartItems?.reduce((total, item) => total + item.quantity, 0) || 0;
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const navigate = useNavigate();
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchTerm.trim()) {
+      navigate(`/search?keyword=${encodeURIComponent(searchTerm.trim())}`);
+    }
+  };
 
   return (
     <>
-      <span className="logo">Pujakriti.</span>
       <div className="navbar">
-        <div className="left_menu menu">
-          <a href="/">Home</a>
-          <a href="#">About</a>
-          <a href="/products">Products</a>
-          <a href="/bundles">Bundles</a>
-          <a href="/contact">Contact</a>
+        <div className="nav_f_container">
+          <a href="/" className="logo">Pujakriti.</a>
+
+          <div className="left_menu menu">
+            <a href="/">Home</a>
+            <a href="/about">About</a>
+            <a href="/products">Products</a>
+            <a href="/bundles">Bundles</a>
+            <a href="/contact">Contact</a>
+          </div>
         </div>
         <div className="right_menu menu">
-          <div className="search_button">
-            <input type="text" placeholder="search" />
+          <form className="search_button" onSubmit={handleSearch}>
+            <input
+              type="text"
+              placeholder="search"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
             <svg
               width="16"
               height="18"
@@ -51,7 +67,8 @@ export default function Navbar() {
                 strokeLinecap="round"
               />
             </svg>
-          </div>
+          </form>
+
           <NavLink className="acc_button" to={"/login"}>
             <svg
               width="16"

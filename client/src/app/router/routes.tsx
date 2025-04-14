@@ -10,6 +10,8 @@ import ServerError from "../errors/ServerError";
 import UnauthorizedError from "../errors/UnauthorizedError";
 import CartPage from "../../features/cart/cartPage";
 import Contact from "../../features/contact/contact";
+import About from "../../features/about/about";
+import SearchResults from "../../features/searchItem/searchResults";
 
 
 export const router = createBrowserRouter([
@@ -20,14 +22,15 @@ export const router = createBrowserRouter([
             {path:'', element:<HomePage/>},
             {path:'products', element:<Catalog/>},
             {path:'bundles', element:<BundleCatalog/>},
-
             {path:'cart', element:<CartPage/>}, 
-
             {path:'contact', element:<Contact/>},
+            {path:'about', element:<About/>},
+
 
             {path:'product/:productId', element:<Product/>},
             {path:'bundle/:bundleId', element:<Bundle/>},
 
+            {path:'search/', element:<SearchResults/>},
 
 
             {path:'not-found', element:<NotFoundError/>},

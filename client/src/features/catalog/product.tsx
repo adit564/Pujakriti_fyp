@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import type { Product } from "../../app/models/product";
 import agent from "../../app/api/agent";
 import NotFoundError from "../../app/errors/NotFoundError";
-import { useAppDispatch } from "../../app/store/configureStore";
+import { RootState, useAppDispatch, useAppSelector } from "../../app/store/configureStore";
 import { setCart } from "../cart/cartSlice";
 
 interface ProductImage {
@@ -23,6 +23,11 @@ export default function Product() {
   const [loading, setLoading] = useState(true);
 
   const [quantity, setQuantity] = useState(1);
+  
+  const discount = useAppSelector(
+    (state: RootState) => state.discount.discountCode
+  );
+  const discountRate = discount?.discountRate ?? 0;
 
 
   useEffect(() => {
@@ -50,7 +55,7 @@ export default function Product() {
 
   function addItemToCart() {
     setLoading(true);
-    agent.Cartt.addItem(product,quantity, dispatch)
+    agent.Cartt.addItem(product,quantity, dispatch, discountRate)
     .then(response=>{
       console.log("Item added to cart: ", response.cart);
       dispatch(setCart(response.cart));

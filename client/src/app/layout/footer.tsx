@@ -3,11 +3,11 @@ export default function Footer() {
         <footer>
             <span className="footer_logo">Pujakriti.</span>
             <div className="footer_nav">
-                <a href="#">Home</a>
-                <a href="#">About</a>
-                <a href="#">Products</a>
-                <a href="#">Contact</a>
-                <a href="#">Bundles</a>
+                <a href="/">Home</a>
+                <a href="/about">About</a>
+                <a href="/products">Products</a>
+                <a href="/contact">Contact</a>
+                <a href="/bundles">Bundles</a>
                 <br />
                 <p className="footer_copyright">© 2025 Pujakriti. All rights reserved.</p>
             </div>

@@ -3,6 +3,9 @@ import "../../app/styles/homePage.css";
 import { useState, useEffect } from "react";
 import { Product } from "../../app/models/product.ts";
 import { Link } from "react-router-dom";
+import agent from "../../app/api/agent.ts";
+import { useAppSelector, RootState, useAppDispatch } from "../../app/store/configureStore.ts";
+import { setCart } from "../cart/cartSlice.ts";
 
 export default function HomePage() {
 
@@ -15,7 +18,13 @@ export default function HomePage() {
 
   const [products, setProducts] = useState<Product[]>([]);
   const [productImages, setProductImages] = useState<ProductImage[]>([]);
-
+  
+  const [loading, setLoading] = useState(true);
+  const discount = useAppSelector(
+    (state: RootState) => state.discount.discountCode
+  );
+  const discountRate = discount?.discountRate ?? 0;
+  const dispatch = useAppDispatch();
   useEffect(() => {
     fetch(
       "http://localhost:8081/api/products?page=0&size=4&sort=productId&order=desc"
@@ -42,6 +51,15 @@ export default function HomePage() {
       });
   }
     , []);
+
+
+    function addItemToCart(product: Product) {
+      setLoading(true);
+      agent.Cartt.addItem(product, 1, dispatch, discountRate)
+        .then((response) => dispatch(setCart(response.cart)))
+        .catch((error) => console.error("Failed to add item to cart: ", error))
+        .finally(() => setLoading(false));
+    }
 
   const carouselItems = [
     {
@@ -137,7 +155,10 @@ export default function HomePage() {
                   <span className="productPrice">NPR {product.price}</span>
                 </div>
               </Link>
-              <a href="#" className="addToCart">Add to cart</a>
+              <a className="addToCart"  onClick={(e) => {
+                  e.preventDefault();
+                  addItemToCart(product);
+                }}>Add to cart</a>
             </div>
           )
           })}

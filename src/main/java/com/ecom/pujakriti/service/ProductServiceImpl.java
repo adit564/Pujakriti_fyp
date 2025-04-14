@@ -10,6 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 
 @Service
 @Log4j2
@@ -49,6 +51,12 @@ public class ProductServiceImpl implements ProductService {
 
     }
 
+    @Override
+    public List<Product> searchProducts(String keyword) {
+
+        return null;
+    }
+
     private ProductResponse convertToProductResponse(Product product) {
         return ProductResponse.builder()
                 .productId(product.getProductId())
@@ -59,4 +67,8 @@ public class ProductServiceImpl implements ProductService {
                 .stock(product.getStock())
                 .build();
     }
+
+
+
+
 }

@@ -1,5 +1,5 @@
 body {
-  font-family: "helvetica_neueregular";
+  font-family: 'helvetica_neue_lt_std55_roman';
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -163,7 +163,8 @@ footer a:hover{
   align-items: center;
   justify-content: center;
   gap: 2vw;
-  background-color: #dddddf;
+  background-color: #e9e9e9c5;
+  backdrop-filter: blur(20px);
   padding: 0.25vh 1vw;
   border-radius: 0.25vw;
 }

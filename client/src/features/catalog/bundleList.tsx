@@ -3,7 +3,11 @@ import { Bundle } from "../../app/models/bundle";
 import "../../app/styles/productLists.css";
 import { Link } from "react-router-dom";
 import agent from "../../app/api/agent";
-import { useAppDispatch } from "../../app/store/configureStore";
+import {
+  RootState,
+  useAppDispatch,
+  useAppSelector,
+} from "../../app/store/configureStore";
 import { setCart } from "../cart/cartSlice";
 
 interface Props {
@@ -17,23 +21,43 @@ interface BundleImage {
   name: string;
 }
 
+interface Puja {
+  id: number;
+  name: string;
+}
+
 export default function BundleList({ bundles }: Props) {
   const [bundleImages, setBundleImages] = useState<BundleImage[]>([]);
+  const [pujas, setPujas] = useState<Puja[]>([]);
+  const [selectedPuja, setSelectedPuja] = useState<string | null>(null);
+  const [sortBy, setSortBy] = useState<string>("bundleId");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+
   const [loading, setLoading] = useState(true);
+
+  const discount = useAppSelector(
+    (state: RootState) => state.discount.discountCode
+  );
+  const discountRate = discount?.discountRate ?? 0;
+
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     agent.BundleImages.list()
       .then((images) => setBundleImages(images.content))
       .catch((error) => console.error("Error fetching bundle Images:", error));
+
+    agent.BundleList.types()
+      .then((fetchedPujas) =>
+        setPujas(fetchedPujas.filter((puja) => puja.name.toLowerCase() !== "all"))
+      )
+      .catch((error) => console.error("Error fetching pujas:", error));
   }, []);
-
-
-  const dispatch = useAppDispatch();
 
   function addItemToCart(bundle: Bundle) {
     console.log("Adding item to cart: ", bundle);
     setLoading(true);
-    agent.Cartt.addItem(bundle, 1, dispatch)
+    agent.Cartt.addItem(bundle, 1, dispatch, discountRate)
       .then((response) => {
         console.log("Item added to cart: ", response.cart);
         dispatch(setCart(response.cart));
@@ -46,6 +70,22 @@ export default function BundleList({ bundles }: Props) {
       });
   }
 
+  // Filter bundles by selected puja
+  const filteredBundles = selectedPuja
+    ? bundles.filter((bundle) => bundle.puja === selectedPuja)
+    : bundles;
+
+  // Sort bundles
+  const sortedBundles = [...filteredBundles].sort((a, b) => {
+    if (sortBy === "bundleId") {
+      return sortOrder === "asc"
+        ? a.bundleId - b.bundleId
+        : b.bundleId - a.bundleId;
+    } else if (sortBy === "price") {
+      return sortOrder === "asc" ? a.price - b.price : b.price - a.price;
+    }
+    return 0;
+  });
 
   return (
     <>
@@ -55,26 +95,52 @@ export default function BundleList({ bundles }: Props) {
           <span>All Bundles</span>
           <span>
             Discover the latest additions to the Shoes line from the FW 2025
-            collection, combining design, innovation, technology and
-            sustainability.
+            collection, combining design, innovation, technology and sustainability.
           </span>
         </div>
 
+        {/* Puja Filter */}
+        <div className="category_filter">
+          <select onChange={(e) => setSelectedPuja(e.target.value || null)}>
+            <option value="">All Pujas</option>
+            {pujas.map((puja) => (
+              <option key={puja.id} value={puja.name}>
+                {puja.name}
+              </option>
+            ))}
+          </select>
+          <div className="sort_order">
+          <select onChange={(e) => setSortBy(e.target.value)}>
+            <option value="bundleId">Sort by Date Added</option>
+            <option value="price">Sort by Price</option>
+          </select>
+
+          <select onChange={(e) => setSortOrder(e.target.value as "asc" | "desc")}>
+            <option value="asc">Ascending</option>
+            <option value="desc">Descending</option>
+          </select>
+        </div>
+        </div>
+
+        {/* Sort Dropdown */}
+
+
         <div className="bundle_container">
-          {bundles.map((bundle) => {
+          {sortedBundles.map((bundle) => {
             const bundleImage = bundleImages.find(
               (image) => image.bundleId === bundle.bundleId
             );
+
             const imageUrl = bundleImage
               ? bundleImage.imageUrl
-              : "/images/bundle_image.jpg"; // Use a default image if not found
+              : "/images/bundle_image.jpg";
 
             const fileName = "/images/bundle_img/" + imageUrl;
 
             return (
               <div className="bundle_div_container" key={bundle.bundleId}>
                 <Link className="bundle_div" to={`/bundle/${bundle.bundleId}`}>
-                <img
+                  <img
                     src={fileName}
                     alt={bundleImage?.name || "bundle_img"}
                   />

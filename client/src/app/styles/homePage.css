@@ -84,12 +84,14 @@
 
 .newProducts_header span:nth-of-type(3) {
   font-size: 0.9vw;
-  margin-top: -1vh;
+  width: 70%;
+  margin-top: 1vh;
 }
 
 .newProducts__links {
   display: flex;
-  gap: 1vw;
+  gap: 2.5vw;
+  margin-top: 2.5vh;
 }
 
 .view_all_btn {
@@ -97,7 +99,7 @@
   font-size: 0.9vw;
   color: #fff;
   text-decoration: none;
-  padding: 0.5vh 1vw;
+  padding: 1.25vh 1vw;
   border-radius: 0.25vw;
   background-color: #131313;
   transition: all 0.3s ease;
@@ -109,7 +111,7 @@
   font-size: 0.9vw;
   color: #131313;
   text-decoration: none;
-  padding: 0.5vh 1vw;
+  padding: 1.25vh 1vw;
   border-radius: 0.25vw;
   background-color: #fdfdfd;
   transition: all 0.3s ease;
@@ -134,6 +136,7 @@
   transition: all 0.3s ease;
   margin: 2vh 0.25vw;
   padding-left: 0.25vw;
+  cursor: pointer;
 }
 
 .homeproduct_div_container .addToCart:hover {
@@ -188,6 +191,36 @@
   }
 
   h2:nth-of-type(2) {
+    margin-top: -8vh;
+  }
+
+  h4 {
+    font-size: 1.2vw;
+    color: #131313;
+    letter-spacing: -0.01vw;
+    font-weight: 500;
+    width: 50%;
+    text-align: center;
+    margin-top: -5vh;
+    font-family: 'helvetica_neue_lt_std65Md';
+
+  }
+}
+
+.about_Page {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 10vh;
+  padding-bottom: 15vh;
+
+  h2 {
+    font-size: 4vw;
+    font-weight: 600;
+  }
+
+  h2:nth-of-type(2) {
     margin-top: -12vh;
   }
 
@@ -202,6 +235,7 @@
     margin-top: -5vh;
   }
 }
+
 
 .home_about_container {
   display: flex;

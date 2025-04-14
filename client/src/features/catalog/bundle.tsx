@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import type { Bundle } from "../../app/models/bundle";
 import agent from "../../app/api/agent";
 import NotFoundError from "../../app/errors/NotFoundError";
-import { useAppDispatch } from "../../app/store/configureStore";
+import { RootState, useAppDispatch, useAppSelector } from "../../app/store/configureStore";
 import { setCart } from "../cart/cartSlice";
 
 interface BundleImage {
@@ -19,6 +19,11 @@ export default function Bundle() {
   const [bundleImages, setBundleImages] = useState<BundleImage | null>(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
+
+  const discount = useAppSelector(
+    (state: RootState) => state.discount.discountCode
+  );
+  const discountRate = discount?.discountRate ?? 0;
 
 
   useEffect(() => {
@@ -46,7 +51,7 @@ export default function Bundle() {
 
   function addItemToCart() {
     setLoading(true);
-    agent.Cartt.addItem(bundle,quantity, dispatch)
+    agent.Cartt.addItem(bundle,quantity, dispatch, discountRate)
     .then(response=>{
       console.log("Item added to cart: ", response.cart);
       dispatch(setCart(response.cart));
@@ -75,7 +80,7 @@ export default function Bundle() {
             <div className="bund_details_title">
               <span>/{bundle.puja}</span>
               <span>/Price</span>
-              <span>/Guide</span>
+              <span>/Guide included</span>
             </div>
             <div className="bund_details">
               <span>{bundle.name}</span>

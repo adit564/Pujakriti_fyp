@@ -54,22 +54,26 @@ const requests = {
 };
 
 const ProductsList = {
-  list: () => requests.get("products"),
+  list: () => requests.get("products?size=50"),
   get: (productId: number) => requests.get(`products/${productId}`),
+  types:()=> requests.get("products/categories").then(types=>[{ id:0, name:"All"} , ...types]),
+  search:(keyword: string) => requests.get(`products?keyword=${keyword}`).then((res)=>res.content),
 };
 
 const ProductImages = {
-  list: () => requests.get("images/productImages"),
+  list: () => requests.get("images/productImages?size=50"),
   get: (productId: number) => requests.get(`images/product/${productId}`),
 };
 
 const BundleList = {
-  list: () => requests.get("bundles"),
+  list: () => requests.get("bundles?size=50"),
   get: (bundleId: number) => requests.get(`bundles/${bundleId}`),
+  types:()=> requests.get("bundles/pujas").then(types=>[{ id:0, name:"All"} , ...types]),
+  search:(keyword: string) => requests.get(`bundles?keyword=${keyword}`).then((res)=>res.content),
 };
 
 const BundleImages = {
-  list: () => requests.get("images/bundlesImages"),
+  list: () => requests.get("images/bundlesImages?size=50"),
   get: (bundleId: number) => requests.get(`images/bundle/${bundleId}`),
 };
 
@@ -82,9 +86,9 @@ const Cartt = {
       throw error;
     }
   },
-  addItem: async (item: any, quantity:number, dispatch: Dispatch) => {
+  addItem: async (item: any, quantity:number, dispatch: Dispatch, discountRate:number = 0) => {
     try {
-      const result = await cartService.addToCart(item, quantity, dispatch);
+      const result = await cartService.addToCart(item, quantity, dispatch, discountRate);
       console.log("Item added to cart: ", result);
       return result;
     } catch (error) {
@@ -142,7 +146,7 @@ const Cartt = {
       console.log("Failed to delete cart: " + error);
       throw error;
     }
-  },
+  }
 };
 
 const agent = {

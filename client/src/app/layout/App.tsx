@@ -7,7 +7,7 @@ import Footer from "./footer.tsx";
 import { Outlet } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import DiscountNotification from "./DiscountNotification.tsx";
+import DiscountNotification from "../../features/discount/DiscountNotification.tsx";
 import { useAppDispatch } from "../store/configureStore.ts";
 import { useEffect } from "react";
 import { setCart } from "../../features/cart/cartSlice.ts";
@@ -24,9 +24,7 @@ function App() {
           const cart = JSON.parse(cartString);
           dispatch(setCart(cart));
         } else {
-          // optionally: fetch from API if not in localStorage
-          // const cart = await agent.Cartt.getCartFromApi();
-          // dispatch(setCart(cart));
+
         }
       } catch (error) {
         console.error("Failed to load cart:", error);

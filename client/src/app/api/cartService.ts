@@ -2,11 +2,14 @@ import axios from "axios";
 import { Cart, CartItem, CartTotal } from "../models/cart";
 import { Dispatch } from "redux";
 import { setCart } from "../../features/cart/cartSlice";
-import { getDiscountCodes } from "../layout/DiscountNotification";
 import { createId } from "@paralleldrive/cuid2";
 
 class cartSerivce {
+
+
   apiUrl: string = "http://localhost:8081/api/cart";
+
+
 
   async getCartFromApi() {
     try {
@@ -30,7 +33,7 @@ class cartSerivce {
     }
   }
 
-  async addToCart(item: any, quantity = 1, dispatch: Dispatch) {
+  async addToCart(item: any, quantity = 1, dispatch: Dispatch, discountRate:number = 0) {
     try {
       let cart = this.getCurrentCart();
       if (!cart) {
@@ -41,7 +44,7 @@ class cartSerivce {
       cart.cartItems = this.upsertItems(cart.cartItems, itemToAdd, quantity);
       this.setCart(cart, dispatch);
 
-      const totals = this.calculateTotals(cart);
+      const totals = this.calculateTotals(cart,discountRate);
 
       return { cart, totals };
     } catch (error) {
@@ -166,13 +169,12 @@ class cartSerivce {
     }
   }
 
-  private calculateTotals(cart: Cart): CartTotal {
+  private calculateTotals(cart: Cart, discountRate:number = 0): CartTotal {
     const total = cart.cartItems.reduce(
       (acc, item) => acc + item.price * item.quantity,
       0
     );
-    const discountRate = getDiscountCodes()?.discountRate || 0;
-    const discount = discountRate ? total * discountRate : 0;
+    const discount = total * discountRate;
     const grandTotal = total - discount;
 
     return {
@@ -181,6 +183,12 @@ class cartSerivce {
       grandTotal,
     };
   }
+
+  public getCartTotals(cart: Cart, discountRate:number = 0): CartTotal {
+    return this.calculateTotals(cart, discountRate);
+  }
+
+
 }
 
 

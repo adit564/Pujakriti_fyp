@@ -11,13 +11,15 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface BundleRepository extends JpaRepository<Bundle, Integer> {
 
 
     Page<Bundle> findAll(Specification<Bundle> spec, Pageable pageable);
 
-    Specification<Bundle> findByNameContainingIgnoreCase(String name);
+    List<Bundle> findByNameContainingIgnoreCase(String keyword);
 
     Specification<Bundle> findByPuja(Puja puja);
 

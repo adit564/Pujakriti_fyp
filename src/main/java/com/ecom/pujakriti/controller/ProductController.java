@@ -1,6 +1,7 @@
 package com.ecom.pujakriti.controller;
 
 
+import com.ecom.pujakriti.entity.Product;
 import com.ecom.pujakriti.model.CategoryResponse;
 import com.ecom.pujakriti.model.ProductResponse;
 import com.ecom.pujakriti.service.CategoryService;
@@ -9,7 +10,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -59,8 +59,10 @@ public class ProductController {
         return new ResponseEntity<>(categoryResponses,HttpStatus.OK);
     }
 
-
-
+    @GetMapping("/search")
+    public List<Product> searchBundles(String keyword) {
+        return productService.searchProducts(keyword);
+    }
 
 
 }

@@ -43,7 +43,8 @@ public class DiscountServiceImpl implements DiscountService {
 
 
     @Override
-    @Scheduled(cron = "0 0 0 * * *")
+//    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "0 * * * * *")
     public void updateSeasonalDiscounts() {
         LocalDate today = LocalDate.now();
 

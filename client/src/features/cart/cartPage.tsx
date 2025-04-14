@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
 import "../../app/styles/cartPage.css";
-import { useAppDispatch, useAppSelector } from "../../app/store/configureStore";
+import {
+  RootState,
+  useAppDispatch,
+  useAppSelector,
+} from "../../app/store/configureStore";
 import agent from "../../app/api/agent";
+import cartService from "../../app/api/cartService";
 
 interface CartItemDetail {
   name: string;
@@ -20,6 +25,10 @@ export default function CartPage() {
   const dispatch = useAppDispatch();
   const { Cartt: CartActions } = agent;
 
+  const discount = useAppSelector(
+    (state: RootState) => state.discount.discountCode
+  );
+  const discountRate = discount?.discountRate ?? 0;
 
   useEffect(() => {
     const fetchItemDetails = async () => {
@@ -34,15 +43,17 @@ export default function CartPage() {
             let imageUrl = "/images/product_img/default.jpg";
 
             if (item.productId) {
-                detail = await agent.ProductsList.get(item.productId);
-                const productImage = await agent.ProductImages.get(item.productId);
-                imageUrl =   `/images/product_img/${productImage.imageUrl}`;
-
-              } else if (item.bundleId) {
-                detail = await agent.BundleList.get(item.bundleId);
-                imageUrl = detail.imageUrl || `/images/bundle_img/${item.bundleId}`;
-                const bundleImage = await agent.BundleImages.get(item.bundleId);
-                imageUrl = `/images/bundle_img/${bundleImage.imageUrl}`;
+              detail = await agent.ProductsList.get(item.productId);
+              const productImage = await agent.ProductImages.get(
+                item.productId
+              );
+              imageUrl = `/images/product_img/${productImage.imageUrl}`;
+            } else if (item.bundleId) {
+              detail = await agent.BundleList.get(item.bundleId);
+              imageUrl =
+                detail.imageUrl || `/images/bundle_img/${item.bundleId}`;
+              const bundleImage = await agent.BundleImages.get(item.bundleId);
+              imageUrl = `/images/bundle_img/${bundleImage.imageUrl}`;
             }
 
             if (detail) {
@@ -77,6 +88,8 @@ export default function CartPage() {
     CartActions.decrementItemQuantity(cart_itemId, quantity, dispatch);
   };
 
+  const totals = cart ? cartService.getCartTotals(cart, discountRate) : null;
+
   if (!cart || cart.cartItems.length === 0) {
     return (
       <div className="cartPage">
@@ -87,8 +100,6 @@ export default function CartPage() {
 
   return (
     <div className="cartPage">
-      <h1>Cart Page</h1>
-
       {cart.cartItems.map((item) => {
         const detail = itemDetails[item.cartItemId];
 
@@ -96,10 +107,7 @@ export default function CartPage() {
           <div key={item.cartItemId} className="cartItem">
             <div className="cart_Item_container">
               <div className="cart_Item_image">
-              <img
-                  src={detail?.imageUrl}
-                  alt={detail?.name}
-                />
+                <img src={detail?.imageUrl} alt={detail?.name} />
               </div>
 
               <div className="cart_item_details">
@@ -137,11 +145,38 @@ export default function CartPage() {
               >
                 Remove item
               </span>
-              <span className="cartItem_price">Nrs {detail?.price || 0}</span>
+              <span className="cartItem_price">NPR {detail?.price || 0}</span>
             </div>
           </div>
         );
       })}
+
+      <div className="cart_totals_container">
+        <div className="cart_totals">
+          <div className="cart_totals_header">
+            <span className="cart_page_title">Cart Page</span>
+
+            <span className="applied_discount">{discount?.code} {(discount?.discountRate ?? 0) * 100}% Discount </span>
+            <div className="cart_totals_details">
+              <div className="cart_total">
+                <span>Total:</span>
+                <span>{totals?.total.toFixed(2)}</span>
+              </div>
+              <div className="cart_discount">
+                <span>Discount:</span>
+                <span>{totals?.discount.toFixed(2)}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="cart_totals_footer">
+            <span>Grand Total:</span>
+            <span>NPR {totals?.grandTotal.toFixed(2)}</span>
+          </div>
+        </div>
+
+        <span className="checkoutBtn">Checkout</span>
+      </div>
     </div>
   );
 }

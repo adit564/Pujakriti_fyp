@@ -8,9 +8,21 @@ export default function BadRequestError() {
     };
 
     return (
-        <div className="text-center">
-            <h1 className="text-3xl font-bold">400 - Bad Request</h1>
-            <p className="mt-4">The request could not be understood by the server due to malformed syntax.</p>
+        <div className="not-found-container">
+        <div className="not-found-content">
+          <div className="error-graphic">
+            <div className="error-circle">4</div>
+            <div className="error-circle">0</div>
+            <div className="error-circle">0</div>
+          </div>
+          <h1>Bad Request</h1>
+          <p className="description">
+          The server couldn't understand your request. Please try again.
+          </p>
+          <button className="home-button" onClick={() => navigate("/")}>
+            Return Home
+          </button>
         </div>
+      </div>
     );
 }

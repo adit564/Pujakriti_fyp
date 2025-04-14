@@ -4,11 +4,14 @@ package com.ecom.pujakriti.service;
 import com.ecom.pujakriti.entity.Bundle;
 import com.ecom.pujakriti.model.BundleResponse;
 import com.ecom.pujakriti.repository.BundleRepository;
+import com.ecom.pujakriti.repository.ProductRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @Log4j2
@@ -16,7 +19,7 @@ public class BundleServiceImpl implements BundleService {
 
     private final BundleRepository bundleRepository;
 
-    public BundleServiceImpl(BundleRepository bundleRepository) {
+    public BundleServiceImpl(BundleRepository bundleRepository, ProductRepository productRepository) {
         this.bundleRepository = bundleRepository;
     }
 
@@ -51,6 +54,13 @@ public class BundleServiceImpl implements BundleService {
 
     }
 
+    @Override
+    public List<Bundle> searchBundles(String keyword) {
+        log.info("Fetching bundles");
+
+        return bundleRepository.findByNameContainingIgnoreCase(keyword);
+    }
+
     private BundleResponse convertToBundleResponse(Bundle bundle) {
         return BundleResponse.builder()
                 .bundleId(bundle.getBundleId())
@@ -62,6 +72,8 @@ public class BundleServiceImpl implements BundleService {
                 .puja(bundle.getPuja().getName())
                 .build();
     }
+
+
 
 
 }
