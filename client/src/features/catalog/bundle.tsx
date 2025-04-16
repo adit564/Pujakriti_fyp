@@ -3,8 +3,13 @@ import { useParams } from "react-router-dom";
 import type { Bundle } from "../../app/models/bundle";
 import agent from "../../app/api/agent";
 import NotFoundError from "../../app/errors/NotFoundError";
-import { RootState, useAppDispatch, useAppSelector } from "../../app/store/configureStore";
+import {
+  RootState,
+  useAppDispatch,
+  useAppSelector,
+} from "../../app/store/configureStore";
 import { setCart } from "../cart/cartSlice";
+import { toast } from "react-toastify";
 
 interface BundleImage {
   imageId: number;
@@ -25,6 +30,16 @@ export default function Bundle() {
   );
   const discountRate = discount?.discountRate ?? 0;
 
+  const userString = localStorage.getItem("user");
+  let currentUser: { user_Id: number | undefined } | null = null;
+
+  if (userString) {
+    try {
+      currentUser = JSON.parse(userString);
+    } catch (error) {
+      console.error("Error parsing user data from local storage:", error);
+    }
+  }
 
   useEffect(() => {
     if (bundleId) {
@@ -46,22 +61,33 @@ export default function Bundle() {
     }
   }, [bundleId]);
 
-
   const dispatch = useAppDispatch();
 
   function addItemToCart() {
-    setLoading(true);
-    agent.Cartt.addItem(bundle,quantity, dispatch, discountRate)
-    .then(response=>{
-      console.log("Item added to cart: ", response.cart);
-      dispatch(setCart(response.cart));
-    })
-    .catch(error=>{
-      console.error("Failed to add item to cart: ", error);
-    })
-    .finally(()=>{
-      setLoading(false);
-    });
+    if (!currentUser) {
+      toast.warning(`Please Log in first`, {
+        position: "bottom-right",
+        autoClose: 5000,
+      });
+    } else {
+      setLoading(true);
+      agent.Cartt.addItem(
+        bundle,
+        quantity,
+        dispatch,
+        discountRate,
+        currentUser?.user_Id
+      )
+        .then((response) => {
+          dispatch(setCart(response.cart));
+        })
+        .catch((error) => {
+          console.error("Failed to add item to cart: ", error);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }
   }
 
   if (!bundle) return <NotFoundError />;

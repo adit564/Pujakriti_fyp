@@ -1,8 +1,10 @@
 import { NavLink } from "react-router-dom";
 import "../styles/navbar.css";
-import { useAppSelector } from "../store/configureStore";
+import { useAppDispatch, useAppSelector } from "../store/configureStore";
 import React, { use, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { logout } from "../../features/auth/authSlice";
+import { clearCart } from "../../features/cart/cartSlice";
 
 export default function Navbar() {
   const { cart } = useAppSelector((state) => state.cart);
@@ -24,11 +26,29 @@ export default function Navbar() {
     }
   };
 
+  const dispatch = useAppDispatch();
+  
+  const handleLogout = () => {
+    // Remove token from localStorage
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+
+    localStorage.removeItem("cart_id");
+    localStorage.removeItem("cart");
+
+    dispatch(logout());
+    dispatch(clearCart())
+
+    navigate('/');
+  };
+
   return (
     <>
       <div className="navbar">
         <div className="nav_f_container">
-          <a href="/" className="logo">Pujakriti.</a>
+          <a href="/" className="logo">
+            Pujakriti.
+          </a>
 
           <div className="left_menu menu">
             <a href="/">Home</a>
@@ -92,6 +112,11 @@ export default function Navbar() {
               />
             </svg>
           </NavLink>
+
+          <button onClick={handleLogout} className="acc_button">
+            Logout
+          </button>
+
           <NavLink to="/cart" className="cart_button">
             <svg
               width="17"

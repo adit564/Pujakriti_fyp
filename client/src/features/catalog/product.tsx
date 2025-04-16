@@ -3,8 +3,13 @@ import { useParams } from "react-router-dom";
 import type { Product } from "../../app/models/product";
 import agent from "../../app/api/agent";
 import NotFoundError from "../../app/errors/NotFoundError";
-import { RootState, useAppDispatch, useAppSelector } from "../../app/store/configureStore";
+import {
+  RootState,
+  useAppDispatch,
+  useAppSelector,
+} from "../../app/store/configureStore";
 import { setCart } from "../cart/cartSlice";
+import { toast } from "react-toastify";
 
 interface ProductImage {
   imageId: number;
@@ -23,17 +28,27 @@ export default function Product() {
   const [loading, setLoading] = useState(true);
 
   const [quantity, setQuantity] = useState(1);
-  
+
   const discount = useAppSelector(
     (state: RootState) => state.discount.discountCode
   );
   const discountRate = discount?.discountRate ?? 0;
 
+  const userString = localStorage.getItem("user");
+  let currentUser: { user_Id: number | undefined } | null = null;
+
+  if (userString) {
+    try {
+      currentUser = JSON.parse(userString);
+    } catch (error) {
+      console.error("Error parsing user data from local storage:", error);
+    }
+  }
 
   useEffect(() => {
     if (productId) {
       const numericId = parseInt(productId);
-
+      setLoading(true);
       Promise.all([
         agent.ProductsList.get(numericId),
         agent.ProductImages.get(numericId),
@@ -44,32 +59,48 @@ export default function Product() {
         })
         .catch((error) => {
           console.error("Error fetching product data:", error);
+        })
+        .finally(() => {
+          setLoading(false);
         });
     } else {
       console.error("Product ID is undefined");
     }
   }, [productId]);
 
-
   const dispatch = useAppDispatch();
 
-  function addItemToCart() {
-    setLoading(true);
-    agent.Cartt.addItem(product,quantity, dispatch, discountRate)
-    .then(response=>{
-      console.log("Item added to cart: ", response.cart);
-      dispatch(setCart(response.cart));
-    })
-    .catch(error=>{
-      console.error("Failed to add item to cart: ", error);
-    })
-    .finally(()=>{
-      setLoading(false);
-    });
+  async function addItemToCart() {
+    if (!currentUser) {
+      toast.warning(
+        `Please Log in first`,
+        {
+          position: "bottom-right",
+          autoClose: 5000,
+        }
+      );
+    } else {
+      setLoading(true);
+      try {
+        const response = await agent.Cartt.addItem(
+          product,
+          quantity,
+          dispatch,
+          discountRate,
+          currentUser?.user_Id
+        );
+        dispatch(setCart(response.cart));
+      } catch (error) {
+        console.error("Failed to add item to cart: ", error);
+      } finally {
+        setLoading(false);
+      }
+    }
   }
 
-  if (!product) return <NotFoundError />;
+  if (loading) return <div>Loading...</div>;
 
+  if (!product) return <NotFoundError />;
 
   return (
     <>

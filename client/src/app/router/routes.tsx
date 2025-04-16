@@ -12,6 +12,8 @@ import CartPage from "../../features/cart/cartPage";
 import Contact from "../../features/contact/contact";
 import About from "../../features/about/about";
 import SearchResults from "../../features/searchItem/searchResults";
+import LoginForm from "../../features/auth/LoginForm";
+import SignupForm from "../../features/auth/SignupForm";
 
 
 export const router = createBrowserRouter([
@@ -31,6 +33,9 @@ export const router = createBrowserRouter([
             {path:'bundle/:bundleId', element:<Bundle/>},
 
             {path:'search/', element:<SearchResults/>},
+
+            {path:'login', element:<LoginForm/>},
+            {path:'signup', element:<SignupForm/>},
 
 
             {path:'not-found', element:<NotFoundError/>},

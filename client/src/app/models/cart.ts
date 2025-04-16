@@ -10,6 +10,7 @@ export interface CartItem {
     bundleId: number
     price: number
     quantity: number
+    stock: number;
 }
   
 

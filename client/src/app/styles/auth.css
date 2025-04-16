@@ -1,0 +1,9 @@
+.auth_form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 2vh;
+  width: 100vw;
+  min-height: 100vh;
+}

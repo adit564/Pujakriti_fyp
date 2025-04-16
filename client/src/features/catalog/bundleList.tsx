@@ -9,6 +9,7 @@ import {
   useAppSelector,
 } from "../../app/store/configureStore";
 import { setCart } from "../cart/cartSlice";
+import { toast } from "react-toastify";
 
 interface Props {
   bundles: Bundle[];
@@ -42,6 +43,17 @@ export default function BundleList({ bundles }: Props) {
 
   const dispatch = useAppDispatch();
 
+  const userString = localStorage.getItem("user");
+  let currentUser: { user_Id: number | undefined } | null = null;
+
+  if (userString) {
+    try {
+      currentUser = JSON.parse(userString);
+    } catch (error) {
+      console.error("Error parsing user data from local storage:", error);
+    }
+  }
+
   useEffect(() => {
     agent.BundleImages.list()
       .then((images) => setBundleImages(images.content))
@@ -55,19 +67,18 @@ export default function BundleList({ bundles }: Props) {
   }, []);
 
   function addItemToCart(bundle: Bundle) {
-    console.log("Adding item to cart: ", bundle);
-    setLoading(true);
-    agent.Cartt.addItem(bundle, 1, dispatch, discountRate)
-      .then((response) => {
-        console.log("Item added to cart: ", response.cart);
-        dispatch(setCart(response.cart));
-      })
-      .catch((error) => {
-        console.error("Failed to add item to cart: ", error);
-      })
-      .finally(() => {
-        setLoading(false);
+    if (!currentUser) {
+      toast.warning(`Please Log in first`, {
+        position: "bottom-right",
+        autoClose: 5000,
       });
+    } else {
+      setLoading(true);
+      agent.Cartt.addItem(bundle, 1, dispatch, discountRate, currentUser?.user_Id)
+        .then((response) => dispatch(setCart(response.cart)))
+        .catch((error) => console.error("Failed to add item to cart: ", error))
+        .finally(() => setLoading(false));
+    }
   }
 
   // Filter bundles by selected puja

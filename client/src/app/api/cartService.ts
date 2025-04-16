@@ -1,15 +1,12 @@
 import axios from "axios";
 import { Cart, CartItem, CartTotal } from "../models/cart";
 import { Dispatch } from "redux";
-import { setCart } from "../../features/cart/cartSlice";
+import { clearCart, setCart } from "../../features/cart/cartSlice";
 import { createId } from "@paralleldrive/cuid2";
+import { toast } from "react-toastify";
 
-class cartSerivce {
-
-
+class cartService {
   apiUrl: string = "http://localhost:8081/api/cart";
-
-
 
   async getCartFromApi() {
     try {
@@ -18,6 +15,11 @@ class cartSerivce {
     } catch (error) {
       throw new Error("Failed to fetch cart items");
     }
+  }
+
+  async getCartById(cartId: string): Promise<Cart> {
+    const response = await axios.get(`/api/cart/${cartId}`);
+    return response.data;
   }
 
   async getCart() {
@@ -33,19 +35,18 @@ class cartSerivce {
     }
   }
 
-  async addToCart(item: any, quantity = 1, dispatch: Dispatch, discountRate:number = 0) {
+  async addToCart(item: any, quantity = 1, dispatch: Dispatch, discountRate: number = 0, userId: number) {
     try {
       let cart = this.getCurrentCart();
       if (!cart) {
-        cart = await this.createCart();
+        cart = await this.createCart(userId);
       }
 
       const itemToAdd = this.mapItemToCartItem(item);
       cart.cartItems = this.upsertItems(cart.cartItems, itemToAdd, quantity);
       this.setCart(cart, dispatch);
 
-      const totals = this.calculateTotals(cart,discountRate);
-
+      const totals = this.calculateTotals(cart, discountRate);
       return { cart, totals };
     } catch (error) {
       throw new Error("Failed to add item to cart");
@@ -57,106 +58,97 @@ class cartSerivce {
     return cart ? (JSON.parse(cart) as Cart) : null;
   }
 
-  private async createCart(): Promise<Cart> {
-    try {
-      const newCart: Cart = {
-        cartId: createId(),
-        userId: 1, //,
-        cartItems: [],
-      };
-      localStorage.setItem("cart_id", newCart.cartId);
-      return newCart;
-    } catch (error) {
-      throw new Error("Failed to create cart");
-    }
+  private async createCart(userId: number): Promise<Cart> {
+    const newCart: Cart = {
+      cartId: createId(),
+      userId,
+      cartItems: [],
+    };
+    localStorage.setItem("cart_id", newCart.cartId);
+    return newCart;
   }
 
   private mapItemToCartItem(item: any): CartItem {
+    const isProduct = item.productId !== undefined && item.productId !== null;
+
     return {
-      cartItemId: item.productId || item.bundleId,
-      productId: item.productId || null,
-      bundleId: item.bundleId || null,
+      cartItemId: isProduct ? parseInt(`1${item.productId}`) : parseInt(`2${item.bundleId}`), // unique ID
+      productId: isProduct ? item.productId : 0,
+      bundleId: isProduct ? 0 : item.bundleId,
       price: item.price,
       quantity: 1,
+      stock:item.stock
     };
   }
 
+  private upsertItems(items: CartItem[], itemToAdd: CartItem, quantity: number): CartItem[] {
+    const existingItem = items.find(item =>
+      item.productId === itemToAdd.productId &&
+      item.bundleId === itemToAdd.bundleId
+    );
+  
+    if (existingItem) {
+      const newQuantity = existingItem.quantity + quantity;
+      existingItem.quantity = newQuantity > existingItem.stock ? existingItem.stock : newQuantity;
+    } else {
+      itemToAdd.quantity = quantity > itemToAdd.stock ? itemToAdd.stock : quantity;
+      items.push(itemToAdd);
+    }
+  
+    return items;
+  }
   async removeItemFromCart(cartItemId: number, dispatch: Dispatch) {
     const cart = this.getCurrentCart();
     if (cart) {
-      const itemIndex = cart.cartItems.findIndex(
-        (item) => item.cartItemId === cartItemId
-      );
-      if (itemIndex !== -1) {
-        cart.cartItems.splice(itemIndex, 1);
-        this.setCart(cart, dispatch);
-      }
-      if(cart.cartItems.length === 0) {
+      cart.cartItems = cart.cartItems.filter(item => item.cartItemId !== cartItemId);
+      this.setCart(cart, dispatch);
+
+      if (cart.cartItems.length === 0) {
         localStorage.removeItem("cart_id");
         localStorage.removeItem("cart");
+        dispatch(clearCart());
       }
     }
   }
-
-  async incrementItemQuantity(cartItemId: number, quantity:number = 1,  dispatch: Dispatch) {
+  async incrementItemQuantity(cartItemId: number, quantity: number = 1, dispatch: Dispatch) {
     const cart = this.getCurrentCart();
     if (cart) {
-      const item = cart.cartItems.find(
-        (item) => item.cartItemId === cartItemId
-      );
+      const item = cart.cartItems.find(item => item.cartItemId === cartItemId);
       if (item) {
-        item.quantity += quantity;
-        if (item.quantity < 1) {
-          item.quantity = 1;
+        const newQuantity = item.quantity + quantity;
+  
+        if (newQuantity > item.stock) {
+          toast.warning("Cannot add more than available stock.");
+          item.quantity = item.stock;
+        } else {
+          item.quantity = newQuantity;
         }
+  
+        if (item.quantity < 1) item.quantity = 1;
+  
         this.setCart(cart, dispatch);
       }
     }
   }
 
-  async decrementItemQuantity(cartItemId: number, quantity:number = 1, dispatch: Dispatch) {
+  async decrementItemQuantity(cartItemId: number, quantity: number = 1, dispatch: Dispatch) {
     const cart = this.getCurrentCart();
     if (cart) {
-      const item = cart.cartItems.find(
-        (item) => item.cartItemId === cartItemId
-      );
-      if (item && item.quantity > 1) {
+      const item = cart.cartItems.find(item => item.cartItemId === cartItemId);
+      if (item) {
         item.quantity -= quantity;
-        if (item.quantity < 1) {
-          item.quantity = 1;
-        }
+        if (item.quantity < 1) item.quantity = 1;
         this.setCart(cart, dispatch);
       }
     }
   }
 
-  async deleteCart(cartId:string): Promise<void> {
-    
+  async deleteCart(cartId: string): Promise<void> {
     try {
       await axios.delete(`${this.apiUrl}/${cartId}`);
     } catch (error) {
       throw new Error("Failed to delete cart");
     }
-
-  }
-
-  private upsertItems(
-    items: CartItem[],
-    itemToAdd: CartItem,
-    quantity: number
-  ): CartItem[] {
-    const existingItem = items.find(
-      (item) => item.cartItemId === itemToAdd.cartItemId
-    );
-
-    if (existingItem) {
-      existingItem.quantity += quantity;
-    } else {
-      itemToAdd.quantity = quantity;
-      items.push(itemToAdd);
-    }
-
-    return items;
   }
 
   async setCart(cart: Cart, dispatch: Dispatch) {
@@ -169,29 +161,16 @@ class cartSerivce {
     }
   }
 
-  private calculateTotals(cart: Cart, discountRate:number = 0): CartTotal {
-    const total = cart.cartItems.reduce(
-      (acc, item) => acc + item.price * item.quantity,
-      0
-    );
+  private calculateTotals(cart: Cart, discountRate: number = 0): CartTotal {
+    const total = cart.cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
     const discount = total * discountRate;
     const grandTotal = total - discount;
-
-    return {
-      total,
-      discount,
-      grandTotal,
-    };
+    return { total, discount, grandTotal };
   }
 
-  public getCartTotals(cart: Cart, discountRate:number = 0): CartTotal {
+  public getCartTotals(cart: Cart, discountRate: number = 0): CartTotal {
     return this.calculateTotals(cart, discountRate);
   }
-
-
 }
 
-
-
-
-export default new cartSerivce();
+export default new cartService();

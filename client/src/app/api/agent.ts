@@ -86,9 +86,9 @@ const Cartt = {
       throw error;
     }
   },
-  addItem: async (item: any, quantity:number, dispatch: Dispatch, discountRate:number = 0) => {
+  addItem: async (item: any, quantity: number, dispatch: Dispatch, discountRate: number = 0, userId: number | undefined) => {
     try {
-      const result = await cartService.addToCart(item, quantity, dispatch, discountRate);
+      const result = await cartService.addToCart(item, quantity, dispatch, discountRate, userId ?? 0);
       console.log("Item added to cart: ", result);
       return result;
     } catch (error) {
@@ -148,6 +148,8 @@ const Cartt = {
     }
   }
 };
+
+
 
 const agent = {
   Cartt,

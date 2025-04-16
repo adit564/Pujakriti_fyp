@@ -9,6 +9,7 @@ import {
   useAppSelector,
 } from "../../app/store/configureStore";
 import { setCart } from "../cart/cartSlice";
+import { toast } from "react-toastify";
 
 interface Props {
   products: Product[];
@@ -42,6 +43,17 @@ export default function ProductList({ products }: Props) {
   const discountRate = discount?.discountRate ?? 0;
   const dispatch = useAppDispatch();
 
+  const userString = localStorage.getItem("user");
+  let currentUser: { user_Id: number | undefined } | null = null;
+
+  if (userString) {
+    try {
+      currentUser = JSON.parse(userString);
+    } catch (error) {
+      console.error("Error parsing user data from local storage:", error);
+    }
+  }
+
   useEffect(() => {
     agent.ProductsList.types()
       .then((types) => setCategories(types))
@@ -53,11 +65,18 @@ export default function ProductList({ products }: Props) {
   }, []);
 
   function addItemToCart(product: Product) {
-    setLoading(true);
-    agent.Cartt.addItem(product, 1, dispatch, discountRate)
-      .then((response) => dispatch(setCart(response.cart)))
-      .catch((error) => console.error("Failed to add item to cart: ", error))
-      .finally(() => setLoading(false));
+    if (!currentUser) {
+      toast.warning(`Please Log in first`, {
+        position: "bottom-right",
+        autoClose: 5000,
+      });
+    } else {
+      setLoading(true);
+      agent.Cartt.addItem(product, 1, dispatch, discountRate, currentUser?.user_Id)
+        .then((response) => dispatch(setCart(response.cart)))
+        .catch((error) => console.error("Failed to add item to cart: ", error))
+        .finally(() => setLoading(false));
+    }
   }
 
   const handleCategoryChange = (categoryName: string | null) => {

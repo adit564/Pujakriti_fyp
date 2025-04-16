@@ -19,7 +19,7 @@ export default function ServerError() {
           <div className="error-circle">0</div>
           <div className="error-circle">0</div>
         </div>
-        <h1>Page Not Found</h1>
+        <h1>Server Error</h1>
         <p className="description">
           Something went wrong on our end. We're working to fix it. Please try
           again later.

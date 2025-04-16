@@ -1,6 +1,7 @@
 package com.ecom.pujakriti.service;
 
 import com.ecom.pujakriti.entity.Cart;
+import com.ecom.pujakriti.entity.User;
 import com.ecom.pujakriti.model.CartResponse;
 
 import java.util.List;
@@ -14,4 +15,5 @@ public interface CartService {
     void deleteCartById(String cartId);
 
     CartResponse createCart(Cart cart);
+
 }

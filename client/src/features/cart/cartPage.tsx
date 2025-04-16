@@ -7,6 +7,7 @@ import {
 } from "../../app/store/configureStore";
 import agent from "../../app/api/agent";
 import cartService from "../../app/api/cartService";
+import { setCart } from "./cartSlice";
 
 interface CartItemDetail {
   name: string;
@@ -25,10 +26,50 @@ export default function CartPage() {
   const dispatch = useAppDispatch();
   const { Cartt: CartActions } = agent;
 
+  const user = useAppSelector((state: RootState) => state.auth.user);
+
+
   const discount = useAppSelector(
     (state: RootState) => state.discount.discountCode
   );
   const discountRate = discount?.discountRate ?? 0;
+
+  const userString = localStorage.getItem("user");
+  let currentUser: { user_Id: number | undefined } | null = null;
+
+  if (userString) {
+    try {
+      currentUser = JSON.parse(userString);
+    } catch (error) {
+      console.error("Error parsing user data from local storage:", error);
+    }
+  }
+  if (!currentUser) {
+    return (
+      <div className="cartPage">
+        <h2>Please Log in to add items.</h2>
+      </div>
+    );
+  }
+
+
+  useEffect(() => {
+    const fetchCartFromStorage = async () => {
+      const cartId = localStorage.getItem("cart_id");
+  
+      if (cartId && !cart) {
+        try {
+          const fetchedCart = await cartService.getCartById(cartId);
+          dispatch(setCart(fetchedCart));
+        } catch (err) {
+          console.error("Error loading cart:", err);
+          localStorage.removeItem("cart_id"); // cart might be deleted on backend
+        }
+      }
+    };
+  
+    fetchCartFromStorage();
+  }, [cart]);
 
   useEffect(() => {
     const fetchItemDetails = async () => {
@@ -50,8 +91,6 @@ export default function CartPage() {
               imageUrl = `/images/product_img/${productImage.imageUrl}`;
             } else if (item.bundleId) {
               detail = await agent.BundleList.get(item.bundleId);
-              imageUrl =
-                detail.imageUrl || `/images/bundle_img/${item.bundleId}`;
               const bundleImage = await agent.BundleImages.get(item.bundleId);
               imageUrl = `/images/bundle_img/${bundleImage.imageUrl}`;
             }

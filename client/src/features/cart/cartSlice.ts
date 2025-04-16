@@ -19,6 +19,11 @@ export const cartSlice = createSlice({
         setCart: (state, action) => {
             console.log("New Cart state: ", action.payload);
             state.cart = action.payload;
+        },
+        clearCart: (state) => {
+            state.cart = null;
+            localStorage.removeItem("cart");
+            localStorage.removeItem("cart_id");
         }
     }
     
@@ -26,3 +31,5 @@ export const cartSlice = createSlice({
 
 
 export const { setCart } = cartSlice.actions;
+
+export const { clearCart } = cartSlice.actions;
