@@ -16,14 +16,14 @@ import java.util.List;
 @NoArgsConstructor
 public class OrderResponse {
     private Integer orderId;
-    private User user;
+    private Integer userId;
     private Double totalAmount;
-    private Address address;
+    private Integer address;
     private Order.OrderStatus status;
-    private DiscountCode discountCode;
+    private Integer discountCodeId;
     private LocalDateTime orderDate;
     private List<OrderItem> orderItems;
-    private Payment payment;
+    private Integer paymentID;
 
     public enum OrderStatus {
         PENDING, PROCESSING, SHIPPED, DELIVERED, CANCELLED

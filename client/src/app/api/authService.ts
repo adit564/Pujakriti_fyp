@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = 'http://localhost:8081/api/auth'; // adjust if needed
+const apiUrl = 'http://localhost:8081/api/auth'; // adjust if needed
 
 export interface AuthResponse {
   token: string;
@@ -12,7 +12,7 @@ export interface AuthResponse {
 
 
 export const login = async (email: string, password: string): Promise<AuthResponse> => {
-  const response = await axios.post(`${API_URL}/login`, { email, password });
+  const response = await axios.post(`${apiUrl}/login`, { email, password });
   
   return response.data;
 };
@@ -23,7 +23,7 @@ export const signup = async (
     password: string,
     phone: string
   ): Promise<AuthResponse> => {
-    const response = await axios.post(`${API_URL}/signup`, {
+    const response = await axios.post(`${apiUrl}/signup`, {
       name,
       email,
       password,

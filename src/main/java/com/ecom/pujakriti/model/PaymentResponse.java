@@ -17,7 +17,9 @@ import java.time.LocalDateTime;
 public class PaymentResponse {
     private Integer paymentId;
 
-    private Order order;
+    private Integer orderId;
+
+    private Integer userId;
 
     private String transactionId;
 

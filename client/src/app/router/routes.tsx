@@ -14,6 +14,7 @@ import About from "../../features/about/about";
 import SearchResults from "../../features/searchItem/searchResults";
 import LoginForm from "../../features/auth/LoginForm";
 import SignupForm from "../../features/auth/SignupForm";
+import AddressList from "../../features/address/addressList";
 
 
 export const router = createBrowserRouter([
@@ -36,6 +37,9 @@ export const router = createBrowserRouter([
 
             {path:'login', element:<LoginForm/>},
             {path:'signup', element:<SignupForm/>},
+
+            {path:'addressList', element:<AddressList/>},
+
 
 
             {path:'not-found', element:<NotFoundError/>},

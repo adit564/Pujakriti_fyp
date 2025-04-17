@@ -4,6 +4,9 @@ import { toast } from "react-toastify";
 import cartService from "./cartService";
 import { Dispatch } from "redux";
 import { Cart } from "../models/cart";
+import addressService from "./addressService";
+import { AddressFormValues } from "../models/address";
+
 
 axios.defaults.baseURL = "http://localhost:8081/api/";
 
@@ -39,6 +42,7 @@ axios.interceptors.response.use(
         break;
       default:
         toast.error("An error occurred:", data);
+        router.navigate("/server-error");
         break;
     }
 
@@ -149,6 +153,49 @@ const Cartt = {
   }
 };
 
+const Address = {
+  getAll: async (userId:number) => {
+    try {
+      return await addressService.getUserAddresses(userId);
+    } catch (error) {
+      console.log("Failed to fetch addresses: ", error);
+      throw error;
+    }
+  },
+  create: async (address: AddressFormValues) => {
+    try {
+      return await addressService.createAddress(address);
+    } catch (error) {
+      console.log("Failed to create address: ", error);
+      throw error;
+    }
+  },
+  update: async (id: number, address: AddressFormValues) => {
+    try {
+      return await addressService.updateAddress(id, address);
+    } catch (error) {
+      console.log("Failed to update address: ", error);
+      throw error;
+    }
+  },
+  delete: async (id: number) => {
+    try {
+      return await addressService.deleteAddress(id);
+    } catch (error) {
+      console.log("Failed to delete address: ", error);
+      throw error;
+    }
+  },
+  setDefault: async (addressId: number, userId: number) => {
+    try {
+      return await addressService.setDefaultAddress(addressId, userId);
+    } catch (error) {
+      console.log("Failed to set default address: ", error);
+      throw error;
+    }
+  },
+};
+
 
 
 const agent = {
@@ -157,6 +204,7 @@ const agent = {
   ProductImages,
   BundleList,
   BundleImages,
+  Address
 };
 
 export default agent;

@@ -26,8 +26,6 @@ export default function CartPage() {
   const dispatch = useAppDispatch();
   const { Cartt: CartActions } = agent;
 
-  const user = useAppSelector((state: RootState) => state.auth.user);
-
 
   const discount = useAppSelector(
     (state: RootState) => state.discount.discountCode

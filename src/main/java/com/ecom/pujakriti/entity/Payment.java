@@ -23,6 +23,10 @@ public class Payment {
     @JoinColumn(name = "OrderID", nullable = false)
     private Order order;
 
+    @OneToOne
+    @JoinColumn(name = "UserID", nullable = false)
+    private User user;
+
     @Column(name = "TransactionID", unique = true)
     private String transactionId;
 
