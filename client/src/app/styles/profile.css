@@ -1,0 +1,387 @@
+/* Login Container Styles */
+.login-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    padding: 20px;
+  }
+  
+  /* Login Form Styles */
+  .login-form {
+    width: 100%;
+    max-width: 450px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    padding: 40px;
+    animation: fadeInUp 0.6s ease-out;
+  }
+  
+  .form-title {
+    font-size: 28px;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+  
+  .form-subtitle {
+    font-size: 16px;
+    color: #718096;
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  
+  /* Form Options */
+  .form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 15px 0 25px;
+  }
+  
+  .remember-me {
+    display: flex;
+    align-items: center;
+  }
+  
+  .remember-me input {
+    margin-right: 8px;
+  }
+  
+  .remember-me label {
+    font-size: 14px;
+    color: #4a5568;
+  }
+  
+  .forgot-password {
+    font-size: 14px;
+    color: #667eea;
+    text-decoration: none;
+  }
+  
+  .forgot-password:hover {
+    text-decoration: underline;
+  }
+  
+  /* Submit Button */
+  .submit-btn {
+    width: 100%;
+    padding: 14px;
+    background-color: #48bb78;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  
+  .submit-btn:hover {
+    background-color: #38a169;
+    transform: translateY(-1px);
+  }
+  
+  .submit-btn:disabled {
+    background-color: #a0aec0;
+    cursor: not-allowed;
+  }
+  
+  /* Signup Link */
+  .signup-link {
+    text-align: center;
+    margin-top: 20px;
+    color: #718096;
+    font-size: 14px;
+  }
+  
+  .signup-link a {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  
+  .signup-link a:hover {
+    text-decoration: underline;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 480px) {
+    .login-form {
+      padding: 30px 20px;
+    }
+    
+    .form-title {
+      font-size: 24px;
+    }
+    
+    .form-options {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    
+    .forgot-password {
+      align-self: flex-end;
+    }
+  }
+
+
+
+  /* Address Container */
+.address-container {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 30px 20px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  }
+  
+  .address-card {
+    width: 100%;
+    max-width: 800px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    animation: fadeInUp 0.6s ease-out;
+  }
+  
+  .address-title {
+    font-size: 28px;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  /* Address List */
+  .address-list {
+    margin-top: 30px;
+  }
+  
+  .address-item {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    padding: 20px;
+    transition: all 0.3s ease;
+  }
+  
+  .address-item:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transform: translateY(-2px);
+  }
+  
+  .default-address {
+    border-left: 4px solid #48bb78;
+    background-color: #f0fff4;
+  }
+  
+  .address-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .address-details {
+    flex: 1;
+  }
+  
+  .address-text {
+    margin: 0;
+    font-size: 16px;
+    color: #4a5568;
+  }
+  
+  .default-badge {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 4px 10px;
+    background-color: #48bb78;
+    color: white;
+    font-size: 12px;
+    border-radius: 12px;
+    font-weight: 500;
+  }
+  
+  /* Buttons */
+  .address-actions {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .edit-btn, .delete-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .edit-btn {
+    background-color: #4299e1;
+    color: white;
+  }
+  
+  .edit-btn:hover {
+    background-color: #3182ce;
+  }
+  
+  .delete-btn {
+    background-color: #f56565;
+    color: white;
+  }
+  
+  .delete-btn:hover {
+    background-color: #e53e3e;
+  }
+  
+  /* Empty State */
+  .no-addresses {
+    text-align: center;
+    color: #718096;
+    padding: 20px;
+    border: 1px dashed #cbd5e0;
+    border-radius: 8px;
+  }
+  
+  /* Animation */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .address-content {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 15px;
+    }
+    
+    .address-actions {
+      width: 100%;
+      justify-content: flex-end;
+    }
+    
+    .address-card {
+      padding: 20px;
+    }
+  }
+
+/* Address Form Container */
+.address-form-container {
+    margin-bottom: 30px;
+  }
+  
+  .address-form-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    padding: 25px;
+    animation: fadeInUp 0.4s ease-out;
+  }
+  
+  .address-form-title {
+    font-size: 22px;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  /* Form Styles */
+  .address-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .form-group label {
+    font-size: 14px;
+    color: #4a5568;
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+  
+  .form-group input {
+    padding: 12px 16px;
+    font-size: 15px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    transition: all 0.3s;
+  }
+  
+  .form-group input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+  }
+  
+  /* Checkbox Styles */
+  .checkbox-group {
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+  }
+  
+  .checkbox-group input {
+    width: 18px;
+    height: 18px;
+    margin-right: 10px;
+    accent-color: #667eea;
+  }
+  
+  .checkbox-group label {
+    font-size: 14px;
+    color: #4a5568;
+    cursor: pointer;
+  }
+  
+  /* Button Styles */
+  .submit-btn {
+    padding: 14px;
+    background-color: #667eea;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 10px;
+  }
+  
+  .submit-btn:hover {
+    background-color: #5a67d8;
+    transform: translateY(-1px);
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .address-form-card {
+      padding: 20px;
+    }
+    
+    .address-form-title {
+      font-size: 20px;
+    }
+  }
+  

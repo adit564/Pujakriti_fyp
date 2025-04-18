@@ -4,6 +4,7 @@ import { cartSlice } from '../../features/cart/cartSlice';
 import { discountSlice } from '../../features/discount/discountSlice';
 import authReducer from '../../features/auth/authSlice';
 
+
 export const store = configureStore({
     reducer:{
         cart: cartSlice.reducer,

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import agent from "../../app/api/agent";
 import { AddressFormValues } from "../../app/models/address";
+import "../../app/styles/profile.css"
 
 interface Props {
   onSuccess: () => void;
@@ -64,49 +65,77 @@ const AddressForm = ({
 
   if (!currentUser) {
     return (
-      <div className="addressPage">
-        <h2>Please log in to manage your addresses.</h2>
+      <div className="address-form-container">
+        <div className="address-form-card">
+          <h2>Please log in to manage your addresses.</h2>
+        </div>
       </div>
     );
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
-    >
-      <input
-        name="city"
-        placeholder="City"
-        value={form.city}
-        onChange={handleChange}
-        required
-      />
-      <input
-        name="street"
-        placeholder="Street"
-        value={form.street}
-        onChange={handleChange}
-        required
-      />
-      <input
-        name="state"
-        placeholder="State"
-        value={form.state}
-        onChange={handleChange}
-        required
-      />
-      <label>
-        <input
-          type="checkbox"
-          name="isDefault"
-          checked={form.isDefault}
-          onChange={handleChange}
-        />
-        Set as default
-      </label>
-      <button type="submit">{editMode ? "Update" : "Add"} Address</button>
-    </form>
+    <div className="address-form-container">
+      <div className="address-form-card">
+        <h3 className="address-form-title">
+          {editMode ? "Edit Address" : "Add New Address"}
+        </h3>
+        <form onSubmit={handleSubmit} className="address-form">
+          <div className="form-group">
+            <label htmlFor="city">City</label>
+            <input
+              id="city"
+              name="city"
+              type="text"
+              placeholder="Enter city"
+              value={form.city}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="street">Street</label>
+            <input
+              id="street"
+              name="street"
+              type="text"
+              placeholder="Enter street address"
+              value={form.street}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="state">State/Province</label>
+            <input
+              id="state"
+              name="state"
+              type="text"
+              placeholder="Enter state or province"
+              value={form.state}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div className="checkbox-group">
+            <input
+              id="isDefault"
+              type="checkbox"
+              name="isDefault"
+              checked={form.isDefault}
+              onChange={handleChange}
+            />
+            <label htmlFor="isDefault">Set as default address</label>
+          </div>
+
+          <button type="submit" className="submit-btn">
+            {editMode ? "Update Address" : "Add Address"}
+          </button>
+        </form>
+      </div>
+    </div>
   );
 };
 
