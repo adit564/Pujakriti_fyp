@@ -17,6 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
 
 @Configuration
 @EnableMethodSecurity()
@@ -44,12 +45,26 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-            http.csrf(AbstractHttpConfigurer::disable)
-                    .authorizeHttpRequests((requests)->requests
-                            .requestMatchers("/auth/login").permitAll()
-                            .anyRequest().permitAll())
-                            .exceptionHandling(ex->ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
-                    .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        http
+                .cors(cors -> cors.configurationSource(request -> {
+                    CorsConfiguration config = new CorsConfiguration();
+                    config.setAllowCredentials(true);
+                    config.addAllowedOrigin("http://localhost:3000");
+                    config.addAllowedHeader("*");
+                    config.addAllowedMethod("GET");
+                    config.addAllowedMethod("POST");
+                    config.addAllowedMethod("PUT");
+                    config.addAllowedMethod("DELETE");
+                    config.addAllowedMethod("OPTIONS");
+                    return config;
+                }))
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests((requests)->requests
+                        .requestMatchers("/auth/login").permitAll()
+                        .requestMatchers("/api/payments/verify").permitAll() // Ensure this path is correct
+                        .anyRequest().permitAll())
+                .exceptionHandling(ex->ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
+                .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }

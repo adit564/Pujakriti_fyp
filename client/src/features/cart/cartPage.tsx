@@ -7,7 +7,8 @@ import {
 } from "../../app/store/configureStore";
 import agent from "../../app/api/agent";
 import cartService from "../../app/api/cartService";
-import { setCart } from "./cartSlice";
+import { setCart, clearCart } from "./cartSlice";
+import { toast } from "react-toastify";
 
 interface CartItemDetail {
   name: string;
@@ -16,16 +17,59 @@ interface CartItemDetail {
   imageUrl?: string;
 }
 
+interface Address {
+  addressId: number;
+  user: number;
+  city: string;
+  street: string;
+  state: string;
+  isDefault: boolean;
+}
+
+interface OrderItemDTO {
+  orderItemId: number;
+  productId?: number;
+  bundleId?: number;
+  quantity: number;
+  price: number;
+}
+
+interface OrderResponse {
+  orderId: number;
+  userId: number;
+  totalAmount: number;
+  address: number;
+  status: string;
+  discountCodeId?: number;
+  orderDate: number[];
+  orderItems: OrderItemDTO[];
+  paymentID?: number;
+}
+
+interface PaymentResponse {
+  paymentId: number;
+  orderId: number;
+  userId: number;
+  transactionId?: string;
+  amount: number;
+  status: "PENDING" | "COMPLETED" | "FAILED" | "REFUNDED";
+  paymentDate: string;
+}
+
 export default function CartPage() {
   const [quantity, setQuantity] = useState(1);
   const [itemDetails, setItemDetails] = useState<
     Record<number, CartItemDetail>
   >({});
+  const [addresses, setAddresses] = useState<Address[]>([]);
+  const [selectedAddressId, setSelectedAddressId] = useState<number | null>(
+    null
+  );
+  const [loading, setLoading] = useState<boolean>(false);
 
   const { cart } = useAppSelector((state) => state.cart);
   const dispatch = useAppDispatch();
   const { Cartt: CartActions } = agent;
-
 
   const discount = useAppSelector(
     (state: RootState) => state.discount.discountCode
@@ -50,24 +94,23 @@ export default function CartPage() {
     );
   }
 
-
   useEffect(() => {
     const fetchCartFromStorage = async () => {
       const cartId = localStorage.getItem("cart_id");
-  
       if (cartId && !cart) {
         try {
           const fetchedCart = await cartService.getCartById(cartId);
           dispatch(setCart(fetchedCart));
         } catch (err) {
           console.error("Error loading cart:", err);
-          localStorage.removeItem("cart_id"); // cart might be deleted on backend
+          localStorage.removeItem("cart_id");
+          localStorage.removeItem("cart");
+          dispatch(clearCart());
         }
       }
     };
-  
     fetchCartFromStorage();
-  }, [cart]);
+  }, [cart, dispatch]);
 
   useEffect(() => {
     const fetchItemDetails = async () => {
@@ -113,6 +156,27 @@ export default function CartPage() {
     fetchItemDetails();
   }, [cart]);
 
+  useEffect(() => {
+    const fetchAddresses = async () => {
+      try {
+        const userId = currentUser?.user_Id;
+        if (userId) {
+          const addressList = await agent.Address.getAll(userId);
+          setAddresses(addressList);
+          const defaultAddress = addressList.find((addr) => addr.isDefault);
+          if (defaultAddress) {
+            setSelectedAddressId(defaultAddress.addressId);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch addresses:", err);
+        toast.error("Failed to load addresses");
+      }
+    };
+
+    fetchAddresses();
+  }, []);
+
   const remove_cart_item = (cart_itemId: number) => {
     CartActions.removeItem(cart_itemId, dispatch);
   };
@@ -123,6 +187,87 @@ export default function CartPage() {
 
   const decrement_cart_item = (cart_itemId: number, quantity: number = 1) => {
     CartActions.decrementItemQuantity(cart_itemId, quantity, dispatch);
+  };
+
+  const handleCheckout = async () => {
+    if (!selectedAddressId) {
+      toast.error("Please select a delivery address");
+      return;
+    }
+
+    if (!cart || !currentUser?.user_Id) {
+      toast.error("Cart or user information missing");
+      return;
+    }
+
+    if (cart.cartItems.length === 0) {
+      toast.error("Cart is empty");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      let currentCartId = cart.cartId;
+
+      // Validate existing cart (you can keep this logic if it's necessary)
+      try {
+        await cartService.getCartById(currentCartId);
+      } catch (err) {
+        console.log("Existing cart invalid, creating new cart");
+        const newCart = await agent.Cartt.createCart(currentUser.user_Id);
+        currentCartId = newCart.cartId;
+        for (const item of cart.cartItems) {
+          await agent.Cartt.addItem(
+            { productId: item.productId, bundleId: item.bundleId, price: item.price, stock: item.stock },
+            item.quantity,
+            dispatch,
+            discountRate,
+            currentUser.user_Id
+          );
+        }
+        await agent.Cartt.setCart(newCart, dispatch);
+      }
+
+      console.log("Creating order with:", {
+        userId: currentUser.user_Id,
+        addressId: selectedAddressId,
+        cartId: currentCartId,
+        discountCode: discount?.code,
+      });
+      const orderId: number = await agent.Orders.create( 
+        currentUser.user_Id,
+        selectedAddressId,
+        currentCartId,
+        discount?.code
+      );
+      console.log("Order created with ID:", orderId);
+
+      if (orderId === undefined || orderId === null) {
+        throw new Error(
+          `Order creation failed: No valid orderId returned. Order ID: ${orderId}`
+        );
+      }
+
+      const totals = cartService.getCartTotals(cart, discountRate);
+      console.log("Initiating payment for orderId:", orderId, "amount:", totals.grandTotal);
+
+      window.location.href = `/payment/initiate/${orderId}/${totals.grandTotal}`;
+
+    } catch (err: any) {
+      console.error("Checkout failed:", err);
+      console.error("Error details:", {
+        message: err.message || "Unknown error",
+        status: err.response?.status,
+        data: err.response?.data || err.response || "No response data",
+      });
+      toast.error(
+        `Checkout failed: ${
+          err.response?.data?.message || err.message || "Please try again"
+        }`
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   const totals = cart ? cartService.getCartTotals(cart, discountRate) : null;
@@ -193,7 +338,9 @@ export default function CartPage() {
           <div className="cart_totals_header">
             <span className="cart_page_title">Cart Page</span>
 
-            <span className="applied_discount">{discount?.code} {(discount?.discountRate ?? 0) * 100}% Discount </span>
+            <span className="applied_discount">
+              {discount?.code} {(discount?.discountRate ?? 0) * 100}% Discount
+            </span>
             <div className="cart_totals_details">
               <div className="cart_total">
                 <span>Total:</span>
@@ -212,7 +359,28 @@ export default function CartPage() {
           </div>
         </div>
 
-        <span className="checkoutBtn">Checkout</span>
+        <div className="address_selection">
+          <label>Select Delivery Address:</label>
+          <select
+            value={selectedAddressId || ""}
+            onChange={(e) => setSelectedAddressId(Number(e.target.value))}
+          >
+            <option value="">Select an address</option>
+            {addresses.map((address) => (
+              <option key={address.addressId} value={address.addressId}>
+                {address.street}, {address.city}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <button
+          className="checkoutBtn"
+          onClick={handleCheckout}
+          disabled={loading}
+        >
+          {loading ? "Processing..." : "Proceed to Checkout"}
+        </button>
       </div>
     </div>
   );

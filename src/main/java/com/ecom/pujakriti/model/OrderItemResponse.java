@@ -18,9 +18,9 @@ public class OrderItemResponse {
 
     private Order order;
 
-    private Product product;
+    private Integer product;
 
-    private Bundle bundle;
+    private Integer bundle;
 
     private Integer quantity;
 

@@ -101,7 +101,7 @@
   padding: 2vh 2vw;
   display: flex;
   flex-direction: column;
-  gap: 47vh;
+  gap: 35vh;
   font-size: 0.8vw;
   font-weight: 600;
 }
@@ -136,3 +136,17 @@
   text-align: center;
 }
 
+.address_selection {
+  margin: 20px 0;
+}
+.address_selection label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+.address_selection select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}

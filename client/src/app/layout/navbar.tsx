@@ -1,17 +1,52 @@
 import { NavLink } from "react-router-dom";
 import "../styles/navbar.css";
 import { useAppDispatch, useAppSelector } from "../store/configureStore";
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../features/auth/authSlice";
 import { clearCart } from "../../features/cart/cartSlice";
 
 export default function Navbar() {
   const { cart } = useAppSelector((state) => state.cart);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLDivElement>(null);
 
+  // Close dropdown when clicking outside
   useEffect(() => {
-    console.log("cart items:", cart?.cartItems);
-  }, [cart]);
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleMouseEnter = () => {
+    setIsDropdownOpen(true);
+  };
+
+  const handleMouseLeave = () => {
+    setTimeout(() => {
+      if (
+        dropdownRef.current &&
+        buttonRef.current &&
+        !dropdownRef.current.matches(":hover") &&
+        !buttonRef.current.matches(":hover")
+      ) {
+        setIsDropdownOpen(false);
+      }
+    }, 100000);
+  };
+
+  // useEffect(() => {
+  //   console.log("cart items:", cart?.cartItems);
+  // }, [cart]);
 
   const cartItemsCount =
     cart?.cartItems?.reduce((total, item) => total + item.quantity, 0) || 0;
@@ -27,19 +62,16 @@ export default function Navbar() {
   };
 
   const dispatch = useAppDispatch();
-  
-  const handleLogout = () => {
-    // Remove token from localStorage
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
     localStorage.removeItem("cart_id");
     localStorage.removeItem("cart");
 
     dispatch(logout());
-    dispatch(clearCart())
-
-    navigate('/');
+    dispatch(clearCart());
+    navigate("/");
   };
 
   return (
@@ -89,33 +121,55 @@ export default function Navbar() {
             </svg>
           </form>
 
-          <NavLink className="acc_button" to={"/login"}>
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 16 16"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <circle
-                cx="8.07915"
-                cy="5.45122"
-                r="4.13735"
-                stroke="black"
-                strokeWidth="1.70001"
-              />
-              <path
-                d="M1.73242 15.0523C6.77385 11.61 9.56204 11.5505 14.4613 15.0523"
-                stroke="#131313"
-                strokeWidth="1.70001"
-                strokeLinecap="round"
-              />
-            </svg>
-          </NavLink>
+          <div
+            className="acc_button_container"
+            ref={buttonRef}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
+            <NavLink className="acc_button" to={"/login"}>
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <circle
+                  cx="8.07915"
+                  cy="5.45122"
+                  r="4.13735"
+                  stroke="black"
+                  strokeWidth="1.70001"
+                />
+                <path
+                  d="M1.73242 15.0523C6.77385 11.61 9.56204 11.5505 14.4613 15.0523"
+                  stroke="#131313"
+                  strokeWidth="1.70001"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </NavLink>
 
-          <button onClick={handleLogout} className="acc_button">
-            Logout
-          </button>
+            {isDropdownOpen && (
+              <div
+                className="dropdown_menu"
+                ref={dropdownRef}
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+              >
+                <NavLink to="/profile" className="dropdown_item">
+                  Profile
+                </NavLink>
+                <NavLink to="/addressList" className="dropdown_item">
+                  Address
+                </NavLink>
+                <button onClick={handleLogout} className="dropdown_item">
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
 
           <NavLink to="/cart" className="cart_button">
             <svg

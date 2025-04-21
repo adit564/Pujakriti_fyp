@@ -4,7 +4,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    /* background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); */
+    background-color: #f8f8f8;
     padding: 20px;
   }
   
@@ -136,8 +137,9 @@
     min-height: 100vh;
     display: flex;
     justify-content: center;
-    padding: 30px 20px;
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    padding: 15vh 20px;
+    /* background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); */
+    background-color: #f8f8f8;
   }
   
   .address-card {

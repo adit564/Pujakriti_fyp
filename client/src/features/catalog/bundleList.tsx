@@ -73,7 +73,21 @@ export default function BundleList({ bundles }: Props) {
         autoClose: 5000,
       });
     } else {
+
       setLoading(true);
+
+
+      if (bundle.price === null || bundle.price === undefined || bundle.price <= 0) {
+        toast.error(`Invalid bundle price: ${bundle.price} for product ${bundle.name} (productId=${bundle.bundleId})`);
+        return;
+      }
+  
+      if (!bundle.stock || bundle.stock <= 0) {
+        toast.error(`Bundle out of stock: ${bundle.name}`);
+        return;
+      }
+
+
       agent.Cartt.addItem(bundle, 1, dispatch, discountRate, currentUser?.user_Id)
         .then((response) => dispatch(setCart(response.cart)))
         .catch((error) => console.error("Failed to add item to cart: ", error))

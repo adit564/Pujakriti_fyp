@@ -61,10 +61,10 @@ public class DiscountServiceImpl implements DiscountService {
         activateCode("HOLI2025", today, LocalDate.of(2025, 3, 20), LocalDate.of(2025, 3, 26));
 
         // New Year Offer
-        activateCode("NY2025", today, LocalDate.of(2025, 4, 11), LocalDate.of(2025, 4, 20));
+        activateCode("NEWYEAR2025", today, LocalDate.of(2025, 4, 11), LocalDate.of(2025, 4, 19));
 
         // Buddha Jayanti
-        activateCode("BUDDHA2025", today, LocalDate.of(2025, 5, 10), LocalDate.of(2025, 5, 15));
+        activateCode("BUDDHA2025", today, LocalDate.of(2025, 4, 21), LocalDate.of(2025, 5, 15));
 
         // Teej Festival
         activateCode("TEEJ2025", today, LocalDate.of(2025, 8, 20), LocalDate.of(2025, 8, 25));

@@ -52,7 +52,7 @@ const SignupForm = () => {
             name="name"
             value={formData.name}
             onChange={handleChange}
-            placeholder="John Doe"
+            placeholder="Your Name"
             required
           />
         </div>
@@ -109,7 +109,7 @@ const SignupForm = () => {
             name="phone"
             value={formData.phone}
             onChange={handleChange}
-            placeholder="+1 (123) 456-7890"
+            placeholder="+977 9815155132"
             required
           />
         </div>

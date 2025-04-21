@@ -85,6 +85,7 @@ public class CartServiceImpl implements CartService {
                 .bundleId(cartItem.getBundleId())
                 .productId(cartItem.getProductId())
                 .quantity(cartItem.getQuantity())
+                .price(cartItem.getPrice())
                 .build();
     }
 

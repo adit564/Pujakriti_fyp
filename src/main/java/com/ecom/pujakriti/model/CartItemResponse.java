@@ -17,4 +17,6 @@ public class CartItemResponse {
     private Integer bundleId;
 
     private Integer quantity;
+
+    private Double price;
 }

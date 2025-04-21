@@ -257,7 +257,7 @@ INSERT INTO DiscountCode (code, DisRate, IsActive, ExpiryDate) VALUES
 ('CHHATH2025', 0.05, TRUE, '2025-11-20'),
 
 -- Nepali New Year Sankranti
-('NEWYEAR2025', 0.15, TRUE, '2025-04-20'),
+('NEWYEAR2025', 0.15, TRUE, '2025-04-19'),
 
 -- Holi (March)
 ('HOLI2025', 0.05, TRUE, '2025-03-25'),

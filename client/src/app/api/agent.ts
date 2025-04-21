@@ -7,10 +7,49 @@ import { Cart } from "../models/cart";
 import addressService from "./addressService";
 import { AddressFormValues } from "../models/address";
 
-
 axios.defaults.baseURL = "http://localhost:8081/api/";
 
+interface OrderItemDTO {
+  orderItemId: number;
+  productId?: number;
+  bundleId?: number;
+  quantity: number;
+  price: number;
+}
 
+interface OrderResponse {
+  orderId: number;
+  userId: number;
+  totalAmount: number;
+  address: number;
+  status: string;
+  discountCodeId?: number;
+  orderDate: number[];
+  orderItems: OrderItemDTO[];
+  paymentID?: number;
+}
+
+interface PaymentResponse {
+  message: string | undefined;
+  paymentId: number;
+  orderId: number;
+  userId: number;
+  transactionId?: string;
+  amount: number;
+  status: "PENDING" | "COMPLETED" | "FAILED" | "REFUNDED";
+  paymentDate: string;
+}
+
+axios.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("jwt"); // Changed from "token" to "jwt"
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
 const idle = () => new Promise((resolve) => setTimeout(resolve, 0));
 const responseBody = (response: AxiosResponse) => {
@@ -23,32 +62,43 @@ axios.interceptors.response.use(
     return response;
   },
   (error: AxiosError) => {
-    const { data, status } = error.response as AxiosResponse;
+    console.error("Error details:", error);
+    const response = error.response as AxiosResponse;
+    const data = response?.data || error.message || "No response data";
+    const status = response?.status;
 
     switch (status) {
-      case 404:
-        toast.error("Resource not found:", data);
-        router.navigate("/not-found");
-        break;
-      case 500:
-        toast.error("Internal Server error:", data);
-        router.navigate("/server-error");
-        break;
-      case 401:
-        toast.error("Unauthorized access:", data);
-        router.navigate("/unauthorized");
-        break;
       case 400:
-        toast.error("Bad request:", data);
+        toast.error(`Bad request: ${data}`);
         router.navigate("/bad-request");
         break;
+      case 401:
+        toast.error(`Unauthorized access: ${data}`);
+        router.navigate("/unauthorized");
+        break;
+      case 404:
+        toast.error(`Resource not found: ${data}`);
+        router.navigate("/not-found");
+        break;
+      case 405:
+        toast.error(`Method not allowed: ${data}`);
+        router.navigate("/bad-request");
+        break;
+      case 500:
+        toast.error(`Internal Server error: ${data}`);
+        router.navigate("/server-error");
+        break;
       default:
-        toast.error("An error occurred:", data);
+        if (error.code === "ERR_NETWORK") {
+          toast.error("Network error: Unable to connect to the server");
+        } else {
+          toast.error(`An error occurred: ${data}`);
+        }
         router.navigate("/server-error");
         break;
     }
 
-    return Promise.reject(error.response);
+    return Promise.reject({ message: error.message, status, data });
   }
 );
 
@@ -62,8 +112,8 @@ const requests = {
 const ProductsList = {
   list: () => requests.get("products?size=50"),
   get: (productId: number) => requests.get(`products/${productId}`),
-  types:()=> requests.get("products/categories").then(types=>[{ id:0, name:"All"} , ...types]),
-  search:(keyword: string) => requests.get(`products?keyword=${keyword}`).then((res)=>res.content),
+  types: () => requests.get("products/categories").then(types => [{ id: 0, name: "All" }, ...types]),
+  search: (keyword: string) => requests.get(`products?keyword=${keyword}`).then((res) => res.content),
 };
 
 const ProductImages = {
@@ -74,8 +124,8 @@ const ProductImages = {
 const BundleList = {
   list: () => requests.get("bundles?size=50"),
   get: (bundleId: number) => requests.get(`bundles/${bundleId}`),
-  types:()=> requests.get("bundles/pujas").then(types=>[{ id:0, name:"All"} , ...types]),
-  search:(keyword: string) => requests.get(`bundles?keyword=${keyword}`).then((res)=>res.content),
+  types: () => requests.get("bundles/pujas").then(types => [{ id: 0, name: "All" }, ...types]),
+  search: (keyword: string) => requests.get(`bundles?keyword=${keyword}`).then((res) => res.content),
 };
 
 const BundleImages = {
@@ -88,7 +138,15 @@ const Cartt = {
     try {
       return await cartService.getCart();
     } catch (error) {
-      console.log("Failed to get cart: " + error);
+      console.log("Failed to get cart: ", error);
+      throw error;
+    }
+  },
+  createCart: async(userId:number)=>{
+    try{
+      return await cartService.createCart(userId);
+    }catch(error){
+      console.log("Failed to create Cart: " + error )
       throw error;
     }
   },
@@ -98,7 +156,7 @@ const Cartt = {
       console.log("Item added to cart: ", result);
       return result;
     } catch (error) {
-      console.log("Failed to add item to cart: " + error);
+      console.log("Failed to add item to cart: ", error);
       throw error;
     }
   },
@@ -108,7 +166,7 @@ const Cartt = {
       console.log("Item removed from cart: ", result);
       return result;
     } catch (error) {
-      console.log("Failed to remove item from cart: " + error);
+      console.log("Failed to remove item from cart: ", error);
       throw error;
     }
   },
@@ -120,7 +178,7 @@ const Cartt = {
     try {
       await cartService.incrementItemQuantity(cartItemId, quantity, dispatch);
     } catch (error) {
-      console.log("Failed to increment item quantity: " + error);
+      console.log("Failed to increment item quantity: ", error);
       throw error;
     }
   },
@@ -132,7 +190,7 @@ const Cartt = {
     try {
       await cartService.decrementItemQuantity(cartItemId, quantity, dispatch);
     } catch (error) {
-      console.log("Failed to decrement item quantity: " + error);
+      console.log("Failed to decrement item quantity: ", error);
       throw error;
     }
   },
@@ -140,23 +198,22 @@ const Cartt = {
     try {
       await cartService.setCart(cart, dispatch);
     } catch (error) {
-      console.log("Failed to set cart: " + error);
+      console.log("Failed to set cart: ", error);
       throw error;
     }
   },
-
   deleteCart: async (cartId: string) => {
     try {
       await cartService.deleteCart(cartId);
     } catch (error) {
-      console.log("Failed to delete cart: " + error);
+      console.log("Failed to delete cart: ", error);
       throw error;
     }
   }
 };
 
 const Address = {
-  getAll: async (userId:number) => {
+  getAll: async (userId: number) => {
     try {
       return await addressService.getUserAddresses(userId);
     } catch (error) {
@@ -198,7 +255,67 @@ const Address = {
   },
 };
 
+const Orders = {
+  create: async (userId: number, addressId: number, cartId: string, discountCode?: string): Promise<number> => {
+    try {
+      const params = new URLSearchParams({
+        userId: userId.toString(),
+        addressId: addressId.toString(),
+        cartId,
+        ...(discountCode && { discountCode })
+      });
+      console.log("Creating order with URL:", `orders?${params.toString()}`);
+      const response = await requests.post(`orders?${params.toString()}`, {});
+      console.log("Order response:", response);
+      return response as number; // Explicitly return as number
+    } catch (error) {
+      console.log("Failed to create order: ", error);
+      throw error;
+    }
+  }
+};
 
+interface StatusResponse {
+  status: 'COMPLETED' | 'FAILED' | 'ERROR';
+  message?: string;
+}
+
+const Payments = {
+  initiate: async (orderId: number, amount: number): Promise<string> => {
+    try {
+      const params = new URLSearchParams({
+        orderId: orderId.toString(),
+        amount: amount.toFixed(2),
+      });
+      console.log("Initiating payment with URL:", `payments/initiate?${params.toString()}`);
+      const response = await axios.get(`payments/initiate?${params.toString()}`, {
+        headers: { Accept: "text/html" },
+      });
+      console.log("Payment initiate response:", response.data);
+      return response.data;
+    } catch (error) {
+      console.log("Failed to initiate payment: ", error);
+      throw error;
+    }
+  },
+  verify: async (orderId: string, amount: string, transactionId: string): Promise<StatusResponse> => {
+    try {
+      const params = new URLSearchParams({
+        orderId: orderId, 
+        amt: amount,
+        refId: transactionId,
+      });
+      console.log("Verifying payment with URL:", `payments/verify?${params.toString()}`);
+      // const response = await requests.get(`payments/verify?${params.toString()}`);
+      const response = await requests.get(`payments/verify?orderId=${orderId}&amt=${amount}&refId=${transactionId}`);
+      console.log("Payment verify response:", response);
+      return response;
+    } catch (error) {
+      console.log("Failed to verify payment: ", error);
+      throw error;
+    }
+  },
+};
 
 const agent = {
   Cartt,
@@ -206,7 +323,9 @@ const agent = {
   ProductImages,
   BundleList,
   BundleImages,
-  Address
+  Address,
+  Orders,
+  Payments
 };
 
 export default agent;

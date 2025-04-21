@@ -15,38 +15,39 @@ import SearchResults from "../../features/searchItem/searchResults";
 import LoginForm from "../../features/auth/LoginForm";
 import SignupForm from "../../features/auth/SignupForm";
 import AddressList from "../../features/address/addressList";
-
+import PaymentVerify from "../../features/payment/paymentVerify";
+import PaymentInitiationPage from "../../features/payment/PaymentInitiationPage";
 
 export const router = createBrowserRouter([
-    {
-        path:'/',
-        element: <App/>,
-        children:[
-            {path:'', element:<HomePage/>},
-            {path:'products', element:<Catalog/>},
-            {path:'bundles', element:<BundleCatalog/>},
-            {path:'cart', element:<CartPage/>}, 
-            {path:'contact', element:<Contact/>},
-            {path:'about', element:<About/>},
+  {
+    path: "/",
+    element: <App />,
+    children: [
+      { path: "", element: <HomePage /> },
+      { path: "products", element: <Catalog /> },
+      { path: "bundles", element: <BundleCatalog /> },
+      { path: "cart", element: <CartPage /> },
+      { path: "contact", element: <Contact /> },
+      { path: "about", element: <About /> },
 
+      { path: "product/:productId", element: <Product /> },
+      { path: "bundle/:bundleId", element: <Bundle /> },
 
-            {path:'product/:productId', element:<Product/>},
-            {path:'bundle/:bundleId', element:<Bundle/>},
+      { path: "search/", element: <SearchResults /> },
 
-            {path:'search/', element:<SearchResults/>},
+      { path: "login", element: <LoginForm /> },
+      { path: "signup", element: <SignupForm /> },
 
-            {path:'login', element:<LoginForm/>},
-            {path:'signup', element:<SignupForm/>},
+      { path: "addressList", element: <AddressList /> },
 
-            {path:'addressList', element:<AddressList/>},
+      { path: "/payment-verify", element: <PaymentVerify />,      },
+      { path: '/payment/initiate/:orderId/:grandTotal', element: <PaymentInitiationPage /> },
 
-
-
-            {path:'not-found', element:<NotFoundError/>},
-            {path:'server-error', element:<ServerError/>},
-            {path:'unauthorized', element:<UnauthorizedError/>},
-            {path:'bad-request', element:<NotFoundError/>},
-            {path:'*', element:<Navigate replace to='/not-found'/>}
-        ]
-    }
-])
+      { path: "not-found", element: <NotFoundError /> },
+      { path: "server-error", element: <ServerError /> },
+      { path: "unauthorized", element: <UnauthorizedError /> },
+      { path: "bad-request", element: <NotFoundError /> },
+      { path: "*", element: <Navigate replace to="/not-found" /> },
+    ],
+  },
+]);

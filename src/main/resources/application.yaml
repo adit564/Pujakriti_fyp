@@ -18,14 +18,17 @@ spring:
         dialect: org.hibernate.dialect.MySQL8Dialect
         format_sql: true
     show-sql: true
-
   data:
     redis:
       host: localhost
       port: 6379
+  config:
+    import: optional:classpath:application.yaml
+
 
 logging:
   level:
     org.hibernate.SQL: debug
     org.hibernate.type.descriptor.sql.BasicBinder: trace
     org.springdoc: DEBUG
+    org.springframework.core.env: DEBUG

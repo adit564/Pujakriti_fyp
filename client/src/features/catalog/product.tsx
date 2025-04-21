@@ -72,13 +72,10 @@ export default function Product() {
 
   async function addItemToCart() {
     if (!currentUser) {
-      toast.warning(
-        `Please Log in first`,
-        {
-          position: "bottom-right",
-          autoClose: 5000,
-        }
-      );
+      toast.warning(`Please Log in first`, {
+        position: "bottom-right",
+        autoClose: 5000,
+      });
     } else {
       setLoading(true);
       try {
@@ -120,7 +117,7 @@ export default function Product() {
             </div>
             <div className="prod_details">
               <span>{product.name}</span>
-              <span>{product.price}</span>
+              <span>NPR {product.price}</span>
               <span>{product.stock}</span>
             </div>
             <span className="prod_desc">{product.description}</span>
@@ -137,7 +134,11 @@ export default function Product() {
               <span>{quantity}</span>
               <span
                 className="btn"
-                onClick={() => setQuantity((prev) => prev + 1)}
+                onClick={() =>
+                  setQuantity((prev) =>
+                    product && prev < product.stock ? prev + 1 : prev
+                  )
+                }
               >
                 +
               </span>

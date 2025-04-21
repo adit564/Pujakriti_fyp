@@ -110,7 +110,7 @@ export default function Bundle() {
             </div>
             <div className="bund_details">
               <span>{bundle.name}</span>
-              <span>{bundle.price}</span>
+              <span>NPR {bundle.price}</span>
               <span>{bundle.guide}</span>
             </div>
             <span className="bund_desc">{bundle.description}</span>
@@ -127,7 +127,11 @@ export default function Bundle() {
               <span>{quantity}</span>
               <span
                 className="btn"
-                onClick={() => setQuantity((prev) => prev + 1)}
+                onClick={() =>
+                  setQuantity((prev) =>
+                    bundle && prev < bundle.stock ? prev + 1 : prev
+                  )
+                }
               >
                 +
               </span>
