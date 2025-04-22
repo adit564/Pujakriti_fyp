@@ -17,6 +17,9 @@ import SignupForm from "../../features/auth/SignupForm";
 import AddressList from "../../features/address/addressList";
 import PaymentVerify from "../../features/payment/paymentVerify";
 import PaymentInitiationPage from "../../features/payment/PaymentInitiationPage";
+import VerifyEmailPage from "../../features/auth/VerifyEmailPage";
+import ForgotPasswordForm from "../../features/auth/ForgotPasswordForm";
+import ResetPasswordForm from "../../features/auth/ResetPasswordForm";
 
 export const router = createBrowserRouter([
   {
@@ -35,8 +38,17 @@ export const router = createBrowserRouter([
 
       { path: "search/", element: <SearchResults /> },
 
+      // { path: "profile", element: < /> },
+
+
       { path: "login", element: <LoginForm /> },
       { path: "signup", element: <SignupForm /> },
+      { path: "verify-email", element: <VerifyEmailPage /> },
+      { path: "forgot-password", element: <ForgotPasswordForm /> },
+      { path: "reset-password", element: <ResetPasswordForm /> },
+
+
+      
 
       { path: "addressList", element: <AddressList /> },
 

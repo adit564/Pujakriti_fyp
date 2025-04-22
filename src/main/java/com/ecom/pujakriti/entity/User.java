@@ -43,6 +43,10 @@ public class User {
     @Column(name = "IsActive", columnDefinition = "BOOLEAN DEFAULT TRUE")
     private Boolean isActive;
 
+    @Column(name = "isEmailVerified", nullable = false)
+    private boolean isEmailVerified = false;
+
+
     public enum Role {
         ADMIN, USER
     }

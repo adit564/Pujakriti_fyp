@@ -42,7 +42,7 @@ interface PaymentResponse {
 
 axios.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("jwt"); // Changed from "token" to "jwt"
+    const token = localStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -62,51 +62,83 @@ axios.interceptors.response.use(
     return response;
   },
   (error: AxiosError) => {
-    console.error("Error details:", error);
     const response = error.response as AxiosResponse;
-    const data = response?.data || error.message || "No response data";
+    const errorData = response?.data as
+      | { detail?: string }
+      | string
+      | undefined;
+
+    let errorMessage = error.message || "No response data";
+
+    if (typeof errorData === "object" && errorData?.detail) {
+      errorMessage = errorData.detail;
+    } else if (typeof errorData === "string") {
+      errorMessage = errorData;
+    }
+
     const status = response?.status;
     const config = error.config;
 
     switch (status) {
       case 400:
-        toast.error(`Bad request: ${data}`);
+        toast.error(`Bad request: ${errorMessage}`);
         router.navigate("/bad-request");
+        return Promise.reject({ message: errorMessage, status, data: response?.data });
         break;
       case 401:
-        toast.error(`Unauthorized access: ${data}`);
-        router.navigate("/unauthorized");
+        if (config?.url?.endsWith("/api/auth/login")) {
+          return Promise.reject({
+            message: errorMessage,
+            status,
+            data: response?.data,
+          });
+        } else {
+          toast.error(`Unauthorized access: ${errorMessage}`);
+          router.navigate("/unauthorized");
+          return Promise.reject({ message: errorMessage, status, data: response?.data });
+        }
         break;
       case 404:
-        toast.error(`Resource not found: ${data}`);
+        toast.error(`Resource not found: ${errorMessage}`);
         router.navigate("/not-found");
         break;
       case 405:
-        toast.error(`Method not allowed: ${data}`);
+        toast.error(`Method not allowed: ${errorMessage}`);
         router.navigate("/bad-request");
         break;
+      case 409: // HANDLE THE 409 CONFLICT FOR DUPLICATE EMAIL
+        if (config?.url?.endsWith('/api/auth/signup') && errorMessage.toLowerCase().includes('email address already exists')) {
+          toast.error(errorMessage);
+          return Promise.reject({ message: errorMessage, status, data: response?.data });
+        } else {
+          toast.error(`Conflict: ${errorMessage}`);
+          router.navigate("/bad-request"); // Or a more appropriate conflict route
+          return Promise.reject({ message: errorMessage, status, data: response?.data });
+        }
+        break;
       case 500:
-        // Check if the error was on the login endpoint
-        if (config?.url?.endsWith('/api/auth/login')) {
+        if (config?.url?.endsWith("/api/auth/login")) {
           toast.error(`Login failed please check your credentials`);
-
-          // Do not navigate, let the component handle the error
         } else {
           router.navigate("/server-error");
-        toast.error(`Internal Server error: ${data}`);
+          toast.error(`Internal Server error: ${errorMessage}`);
         }
         break;
       default:
         if (error.code === "ERR_NETWORK") {
           toast.error("Network error: Unable to connect to the server");
         } else {
-          toast.error(`An error occurred: ${data}`);
+          toast.error(`An error occurred: ${errorMessage}`);
         }
         router.navigate("/server-error");
         break;
     }
 
-    return Promise.reject({ message: error.message, status, data });
+    return Promise.reject({
+      message: errorMessage,
+      status,
+      data: response?.data,
+    });
   }
 );
 
@@ -120,8 +152,12 @@ const requests = {
 const ProductsList = {
   list: () => requests.get("products?size=50"),
   get: (productId: number) => requests.get(`products/${productId}`),
-  types: () => requests.get("products/categories").then(types => [{ id: 0, name: "All" }, ...types]),
-  search: (keyword: string) => requests.get(`products?keyword=${keyword}`).then((res) => res.content),
+  types: () =>
+    requests
+      .get("products/categories")
+      .then((types) => [{ id: 0, name: "All" }, ...types]),
+  search: (keyword: string) =>
+    requests.get(`products?keyword=${keyword}`).then((res) => res.content),
 };
 
 const ProductImages = {
@@ -132,8 +168,12 @@ const ProductImages = {
 const BundleList = {
   list: () => requests.get("bundles?size=50"),
   get: (bundleId: number) => requests.get(`bundles/${bundleId}`),
-  types: () => requests.get("bundles/pujas").then(types => [{ id: 0, name: "All" }, ...types]),
-  search: (keyword: string) => requests.get(`bundles?keyword=${keyword}`).then((res) => res.content),
+  types: () =>
+    requests
+      .get("bundles/pujas")
+      .then((types) => [{ id: 0, name: "All" }, ...types]),
+  search: (keyword: string) =>
+    requests.get(`bundles?keyword=${keyword}`).then((res) => res.content),
 };
 
 const BundleImages = {
@@ -150,17 +190,29 @@ const Cartt = {
       throw error;
     }
   },
-  createCart: async(userId:number)=>{
-    try{
+  createCart: async (userId: number) => {
+    try {
       return await cartService.createCart(userId);
-    }catch(error){
-      console.log("Failed to create Cart: " + error )
+    } catch (error) {
+      console.log("Failed to create Cart: " + error);
       throw error;
     }
   },
-  addItem: async (item: any, quantity: number, dispatch: Dispatch, discountRate: number = 0, userId: number | undefined) => {
+  addItem: async (
+    item: any,
+    quantity: number,
+    dispatch: Dispatch,
+    discountRate: number = 0,
+    userId: number | undefined
+  ) => {
     try {
-      const result = await cartService.addToCart(item, quantity, dispatch, discountRate, userId ?? 0);
+      const result = await cartService.addToCart(
+        item,
+        quantity,
+        dispatch,
+        discountRate,
+        userId ?? 0
+      );
       console.log("Item added to cart: ", result);
       return result;
     } catch (error) {
@@ -217,7 +269,7 @@ const Cartt = {
       console.log("Failed to delete cart: ", error);
       throw error;
     }
-  }
+  },
 };
 
 const Address = {
@@ -264,13 +316,18 @@ const Address = {
 };
 
 const Orders = {
-  create: async (userId: number, addressId: number, cartId: string, discountCode?: string): Promise<number> => {
+  create: async (
+    userId: number,
+    addressId: number,
+    cartId: string,
+    discountCode?: string
+  ): Promise<number> => {
     try {
       const params = new URLSearchParams({
         userId: userId.toString(),
         addressId: addressId.toString(),
         cartId,
-        ...(discountCode && { discountCode })
+        ...(discountCode && { discountCode }),
       });
       console.log("Creating order with URL:", `orders?${params.toString()}`);
       const response = await requests.post(`orders?${params.toString()}`, {});
@@ -280,11 +337,11 @@ const Orders = {
       console.log("Failed to create order: ", error);
       throw error;
     }
-  }
+  },
 };
 
 interface StatusResponse {
-  status: 'COMPLETED' | 'FAILED' | 'ERROR';
+  status: "COMPLETED" | "FAILED" | "ERROR";
   message?: string;
 }
 
@@ -295,10 +352,16 @@ const Payments = {
         orderId: orderId.toString(),
         amount: amount.toFixed(2),
       });
-      console.log("Initiating payment with URL:", `payments/initiate?${params.toString()}`);
-      const response = await axios.get(`payments/initiate?${params.toString()}`, {
-        headers: { Accept: "text/html" },
-      });
+      console.log(
+        "Initiating payment with URL:",
+        `payments/initiate?${params.toString()}`
+      );
+      const response = await axios.get(
+        `payments/initiate?${params.toString()}`,
+        {
+          headers: { Accept: "text/html" },
+        }
+      );
       console.log("Payment initiate response:", response.data);
       return response.data;
     } catch (error) {
@@ -306,16 +369,25 @@ const Payments = {
       throw error;
     }
   },
-  verify: async (orderId: string, amount: string, transactionId: string): Promise<StatusResponse> => {
+  verify: async (
+    orderId: string,
+    amount: string,
+    transactionId: string
+  ): Promise<StatusResponse> => {
     try {
       const params = new URLSearchParams({
-        orderId: orderId, 
+        orderId: orderId,
         amt: amount,
         refId: transactionId,
       });
-      console.log("Verifying payment with URL:", `payments/verify?${params.toString()}`);
+      console.log(
+        "Verifying payment with URL:",
+        `payments/verify?${params.toString()}`
+      );
       // const response = await requests.get(`payments/verify?${params.toString()}`);
-      const response = await requests.get(`payments/verify?orderId=${orderId}&amt=${amount}&refId=${transactionId}`);
+      const response = await requests.get(
+        `payments/verify?orderId=${orderId}&amt=${amount}&refId=${transactionId}`
+      );
       console.log("Payment verify response:", response);
       return response;
     } catch (error) {
@@ -333,7 +405,7 @@ const agent = {
   BundleImages,
   Address,
   Orders,
-  Payments
+  Payments,
 };
 
 export default agent;

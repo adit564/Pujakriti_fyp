@@ -79,13 +79,13 @@ public class PaymentServiceImpl implements PaymentService {
             String transactionUuid = payment.getTransactionId(); // Use the transaction ID from the Payment object
 
             String successUrl = String.format(
-                    "http://localhost:3000/payment-verify?status=success&oid=%s&amt=%s&refId=%s",
+                    "https://localhost:3000/payment-verify?status=success&oid=%s&amt=%s&refId=%s",
                     URLEncoder.encode(orderId.toString(), StandardCharsets.UTF_8.toString()),
                     URLEncoder.encode(amount, StandardCharsets.UTF_8.toString()),
                     URLEncoder.encode("ESEWA_REF_" + transactionUuid.substring(0, 8), StandardCharsets.UTF_8.toString())
             );
             String failureUrl = String.format(
-                    "http://localhost:3000/payment-verify?status=failed&oid=%s&amt=%s",
+                    "https://localhost:3000/payment-verify?status=failed&oid=%s&amt=%s",
                     URLEncoder.encode(orderId.toString(), StandardCharsets.UTF_8.toString()),
                     URLEncoder.encode(amount, StandardCharsets.UTF_8.toString())
             );

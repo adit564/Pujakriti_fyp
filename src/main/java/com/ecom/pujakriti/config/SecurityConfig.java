@@ -49,7 +49,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration config = new CorsConfiguration();
                     config.setAllowCredentials(true);
-                    config.addAllowedOrigin("http://localhost:3000");
+                    config.addAllowedOrigin("https://localhost:3000");
                     config.addAllowedHeader("*");
                     config.addAllowedMethod("GET");
                     config.addAllowedMethod("POST");

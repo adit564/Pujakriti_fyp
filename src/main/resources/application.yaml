@@ -24,6 +24,18 @@ spring:
       port: 6379
   config:
     import: optional:classpath:application.yaml
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: pujakritishop@gmail.com
+    password: zmlf tbpx tpul epqj
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
 
 
 logging:

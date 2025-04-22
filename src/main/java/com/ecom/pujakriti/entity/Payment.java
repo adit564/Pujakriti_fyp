@@ -24,7 +24,7 @@ public class Payment {
     private Order order;
 
     @OneToOne
-    @JoinColumn(name = "UserID", nullable = false)
+    @JoinColumn(name = "UserID", nullable = false, unique = false)
     private User user;
 
     @Column(name = "TransactionID", unique = true)

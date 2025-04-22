@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { loginUser, signupUser } from './authSlice';
+import { clearAuthError, loginUser, signupUser } from './authSlice';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../app/store/configureStore';
 import "../../app/styles/auth.css";
@@ -8,7 +8,12 @@ import { toast } from 'react-toastify';
 const SignupForm = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { loading, error, user } = useAppSelector((state) => state.auth);
+  const { loading, error, user, verificationMessage  } = useAppSelector((state) => state.auth as{
+    loading: boolean;
+    error: null | { message?: string; detail?: string }; 
+    user: any;
+    verificationMessage?: string; 
+  });
   const [showPassword, setShowPassword] = useState(false);
   const [formErrors, setFormErrors] = useState({
     name: '',
@@ -31,6 +36,14 @@ const SignupForm = () => {
       return;
     }
   }, [user, navigate]);
+
+
+  useEffect(() => {
+    return () => {
+      dispatch(clearAuthError());
+    };
+  }, [dispatch]);
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -58,6 +71,10 @@ const SignupForm = () => {
       phone: '',
     };
 
+
+
+
+    
     if (!formData.name.trim()) {
       errors.name = 'Full name is required';
       isValid = false;
@@ -99,6 +116,8 @@ const SignupForm = () => {
     setFormErrors(errors);
     return isValid;
   };
+
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
@@ -106,18 +125,10 @@ const SignupForm = () => {
       const result = await dispatch(signupUser(formData));
       setIsSubmitting(false);
       if (signupUser.fulfilled.match(result)) {
-        toast.success('Signup successful! Logging you in...');
-        // Dispatch the loginUser thunk with the signup credentials
-        const loginResult = await dispatch(
-          loginUser({ email: formData.email, password: formData.password })
-        );
-        if (loginUser.fulfilled.match(loginResult)) {
-          navigate('/');
-        } else if (loginUser.rejected.match(loginResult)) {
-          toast.error('Login failed after signup. Please try logging in.');
-          navigate('/login');
-        }
-      } 
+        toast.success(verificationMessage || 'Signup successful! Please check your email to verify your account.');
+        // Optionally navigate to a "check email" page
+        // navigate('/check-email'); // You'll need to create this route/component
+      }
     }
   };
 
@@ -138,7 +149,15 @@ const SignupForm = () => {
         <h2 className="form-title">Create Account</h2>
         <p className="form-subtitle">Join us today!</p>
 
-        {error && <div className="error-message">{error}</div>}
+        {error && typeof error === 'object' && error?.message === "Email address already exists" && (
+          <div className="error-message">Email address already exists. Please use a different email.</div>
+        )}
+        {error && typeof error === 'object' && error?.message && error?.message !== "Email address already exists" && (
+          <div className="error-message">{error.message}</div>
+        )}
+        {error && typeof error === 'string' && (
+          <div className="error-message">{error}</div>
+        )}
 
         <div className="form-group">
           <label htmlFor="name">Full Name</label>
