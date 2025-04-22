@@ -1,19 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { loginUser } from './authSlice';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../app/store/configureStore';
-import "../../app/styles/profile.css"
+import "../../app/styles/profile.css";
 
 const LoginForm = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { loading, error } = useAppSelector((state) => state.auth);
+  const { loading, error, user } = useAppSelector((state) => state.auth);
   const [showPassword, setShowPassword] = useState(false);
 
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
+
+  useEffect(() => {
+    if (user) {
+      navigate('/');
+      return; 
+    }
+  }, [user, navigate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({
@@ -33,6 +40,17 @@ const LoginForm = () => {
       navigate('/');
     }
   };
+
+  if (user) {
+    return (
+      <div className="login-container">
+        <div className="already-logged-in">
+          <h2>You are already logged in!</h2>
+          <p>You will be redirected shortly...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="login-container">
@@ -67,8 +85,8 @@ const LoginForm = () => {
               placeholder="••••••••"
               required
             />
-            <button 
-              type="button" 
+            <button
+              type="button"
               className="toggle-password"
               onClick={togglePasswordVisibility}
               aria-label={showPassword ? "Hide password" : "Show password"}
@@ -87,10 +105,10 @@ const LoginForm = () => {
         </div>
 
         <div className="form-options">
-          <div className="remember-me">
+          {/* <div className="remember-me">
             <input type="checkbox" id="remember" />
             <label htmlFor="remember">Remember me</label>
-          </div>
+          </div> */}
           <a href="/forgot-password" className="forgot-password">Forgot password?</a>
         </div>
 

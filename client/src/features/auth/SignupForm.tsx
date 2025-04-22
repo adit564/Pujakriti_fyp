@@ -1,26 +1,47 @@
-import React, { useState } from 'react';
-import { signupUser } from './authSlice';
+import React, { useState, useEffect } from 'react';
+import { loginUser, signupUser } from './authSlice';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../app/store/configureStore';
-import "../../app/styles/auth.css"
+import "../../app/styles/auth.css";
+import { toast } from 'react-toastify';
 
 const SignupForm = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { loading, error } = useAppSelector((state) => state.auth);
+  const { loading, error, user } = useAppSelector((state) => state.auth);
   const [showPassword, setShowPassword] = useState(false);
-
-  const [formData, setFormData] = useState({
-    name: '',  
+  const [formErrors, setFormErrors] = useState({
+    name: '',
     email: '',
     password: '',
-    phone: ''
+    phone: '',
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    phone: '',
   });
 
+  useEffect(() => {
+    if (user) {
+      navigate('/login'); // Redirect to login after successful signup
+      return;
+    }
+  }, [user, navigate]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
+      [name]: value,
+    }));
+    // Clear the error for the changed field
+    setFormErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: '',
     }));
   };
 
@@ -28,13 +49,88 @@ const SignupForm = () => {
     setShowPassword(!showPassword);
   };
 
+  const validateForm = () => {
+    let isValid = true;
+    const errors: { name: string; email: string; password: string; phone: string } = {
+      name: '',
+      email: '',
+      password: '',
+      phone: '',
+    };
+
+    if (!formData.name.trim()) {
+      errors.name = 'Full name is required';
+      isValid = false;
+    }
+
+    if (!formData.email.trim()) {
+      errors.email = 'Email address is required';
+      isValid = false;
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      errors.email = 'Invalid email format';
+      isValid = false;
+    }
+
+    if (!formData.password) {
+      errors.password = 'Password is required';
+      isValid = false;
+    } else if (formData.password.length < 8) {
+      errors.password = 'Password must be at least 8 characters and must contain at least one lowercase, uppercase and special character';
+      isValid = false;
+    } else if (!/[a-z]/.test(formData.password)) {
+      errors.password = 'Password must be at least 8 characters and must contain at least one lowercase, uppercase and special character';
+      isValid = false;
+    } else if (!/[A-Z]/.test(formData.password)) {
+      errors.password = 'Password must be at least 8 characters and must contain at least one lowercase, uppercase and special character';
+      isValid = false;
+    } else if (!/[^a-zA-Z0-9\s]/.test(formData.password)) {
+      errors.password = 'Password must be at least 8 characters and must contain at least one lowercase, uppercase and special character';
+      isValid = false;
+    }
+
+    if (!formData.phone.trim()) {
+      errors.phone = 'Phone number is required';
+      isValid = false;
+    } else if (!/^\d{10}$/.test(formData.phone)) {
+      errors.phone = 'Phone number must be 10 digits';
+      isValid = false;
+    }
+
+    setFormErrors(errors);
+    return isValid;
+  };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const result = await dispatch(signupUser(formData)); 
-    if (signupUser.fulfilled.match(result)) {
-      navigate('/login'); 
+    if (validateForm()) {
+      setIsSubmitting(true);
+      const result = await dispatch(signupUser(formData));
+      setIsSubmitting(false);
+      if (signupUser.fulfilled.match(result)) {
+        toast.success('Signup successful! Logging you in...');
+        // Dispatch the loginUser thunk with the signup credentials
+        const loginResult = await dispatch(
+          loginUser({ email: formData.email, password: formData.password })
+        );
+        if (loginUser.fulfilled.match(loginResult)) {
+          navigate('/');
+        } else if (loginUser.rejected.match(loginResult)) {
+          toast.error('Login failed after signup. Please try logging in.');
+          navigate('/login');
+        }
+      } 
     }
   };
+
+  if (user) {
+    return (
+      <div className="signup-container">
+        <div className="already-logged-in">
+          <h2>You are already signed up and might be logged in!</h2>
+          <p>You will be redirected shortly...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="signup-container">
@@ -54,7 +150,10 @@ const SignupForm = () => {
             onChange={handleChange}
             placeholder="Your Name"
             required
+            aria-invalid={!!formErrors.name}
+            aria-describedby="name-error"
           />
+          {formErrors.name && <div className="error-message" id="name-error">{formErrors.name}</div>}
         </div>
 
         <div className="form-group">
@@ -67,7 +166,10 @@ const SignupForm = () => {
             onChange={handleChange}
             placeholder="your@email.com"
             required
+            aria-invalid={!!formErrors.email}
+            aria-describedby="email-error"
           />
+          {formErrors.email && <div className="error-message" id="email-error">{formErrors.email}</div>}
         </div>
 
         <div className="form-group password-group">
@@ -81,9 +183,11 @@ const SignupForm = () => {
               onChange={handleChange}
               placeholder="••••••••"
               required
+              aria-invalid={!!formErrors.password}
+              aria-describedby="password-error"
             />
-            <button 
-              type="button" 
+            <button
+              type="button"
               className="toggle-password"
               onClick={togglePasswordVisibility}
               aria-label={showPassword ? "Hide password" : "Show password"}
@@ -99,6 +203,7 @@ const SignupForm = () => {
               )}
             </button>
           </div>
+          {formErrors.password && <div className="error-message" id="password-error">{formErrors.password}</div>}
         </div>
 
         <div className="form-group">
@@ -109,13 +214,16 @@ const SignupForm = () => {
             name="phone"
             value={formData.phone}
             onChange={handleChange}
-            placeholder="+977 9815155132"
+            placeholder="+977 9811111111"
             required
+            aria-invalid={!!formErrors.phone}
+            aria-describedby="phone-error"
           />
+          {formErrors.phone && <div className="error-message" id="phone-error">{formErrors.phone}</div>}
         </div>
 
-        <button type="submit" disabled={loading} className="submit-btn">
-          {loading ? (
+        <button type="submit" disabled={loading || isSubmitting} className="submit-btn">
+          {loading || isSubmitting ? (
             <span className="spinner">Processing...</span>
           ) : (
             'Sign Up'

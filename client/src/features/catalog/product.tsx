@@ -78,20 +78,43 @@ export default function Product() {
       });
     } else {
       setLoading(true);
-      try {
-        const response = await agent.Cartt.addItem(
-          product,
-          quantity,
-          dispatch,
-          discountRate,
-          currentUser?.user_Id
-        );
-        dispatch(setCart(response.cart));
-      } catch (error) {
-        console.error("Failed to add item to cart: ", error);
-      } finally {
-        setLoading(false);
+
+      if (!product || product.price === null || product.price === undefined || product.price <= 0) {
+        toast.error(`Invalid product price: ${product?.price} for product ${product?.name} (productId=${product?.productId})`);
+        return;
       }
+      
+      if (!product || !product.stock || product.stock <= 0) {
+        toast.error(`Product out of stock: ${product?.name}`);
+        return;
+      }
+
+
+      agent.Cartt.addItem(
+        product,
+        quantity,
+        dispatch,
+        discountRate,
+        currentUser?.user_Id
+      )
+      .then((response) => dispatch(setCart(response.cart)))
+      .catch((error) => console.error("Failed to add item to cart: ", error))
+      .finally(() => setLoading(false));
+
+      // try {
+      //   const response = await agent.Cartt.addItem(
+      //     product,
+      //     quantity,
+      //     dispatch,
+      //     discountRate,
+      //     currentUser?.user_Id
+      //   );
+      //   dispatch(setCart(response.cart));
+      // } catch (error) {
+      //   console.error("Failed to add item to cart: ", error);
+      // } finally {
+      //   setLoading(false);
+      // }
     }
   }
 

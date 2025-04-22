@@ -1,6 +1,3 @@
-// import reactLogo from './assets/react.svg'
-// import viteLogo from '/vite.svg'
-// import Catalog from '../../features/catalog/catalog.tsx';
 import "../styles/app.css";
 import Navbar from "./navbar.tsx";
 import Footer from "./footer.tsx";
@@ -11,6 +8,7 @@ import DiscountNotification from "../../features/discount/DiscountNotification.t
 import { useAppDispatch } from "../store/configureStore.ts";
 import { useEffect } from "react";
 import { setCart } from "../../features/cart/cartSlice.ts";
+import { loadUserFromStorage } from "../../features/auth/authSlice.ts";
 
 function App() {
   DiscountNotification();
@@ -32,6 +30,7 @@ function App() {
     };
 
     loadCart();
+    dispatch(loadUserFromStorage());
   }, [dispatch]);
 
   return (

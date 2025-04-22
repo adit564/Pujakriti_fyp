@@ -71,6 +71,17 @@ export default function Bundle() {
       });
     } else {
       setLoading(true);
+
+      if (!bundle || bundle.price === null || bundle.price === undefined || bundle.price <= 0) {
+        toast.error(`Invalid bundle price: ${bundle?.price} for bundle ${bundle?.name} (bundleId=${bundle?.bundleId})`);
+        return;
+      }
+      
+      if (!bundle || !bundle.stock || bundle.stock <= 0) {
+        toast.error(`bundle out of stock: ${bundle?.name}`);
+        return;
+      }
+
       agent.Cartt.addItem(
         bundle,
         quantity,
@@ -78,15 +89,9 @@ export default function Bundle() {
         discountRate,
         currentUser?.user_Id
       )
-        .then((response) => {
-          dispatch(setCart(response.cart));
-        })
-        .catch((error) => {
-          console.error("Failed to add item to cart: ", error);
-        })
-        .finally(() => {
-          setLoading(false);
-        });
+      .then((response) => dispatch(setCart(response.cart)))
+      .catch((error) => console.error("Failed to add item to cart: ", error))
+      .finally(() => setLoading(false));
     }
   }
 

@@ -66,6 +66,7 @@ axios.interceptors.response.use(
     const response = error.response as AxiosResponse;
     const data = response?.data || error.message || "No response data";
     const status = response?.status;
+    const config = error.config;
 
     switch (status) {
       case 400:
@@ -85,8 +86,15 @@ axios.interceptors.response.use(
         router.navigate("/bad-request");
         break;
       case 500:
+        // Check if the error was on the login endpoint
+        if (config?.url?.endsWith('/api/auth/login')) {
+          toast.error(`Login failed please check your credentials`);
+
+          // Do not navigate, let the component handle the error
+        } else {
+          router.navigate("/server-error");
         toast.error(`Internal Server error: ${data}`);
-        router.navigate("/server-error");
+        }
         break;
       default:
         if (error.code === "ERR_NETWORK") {
