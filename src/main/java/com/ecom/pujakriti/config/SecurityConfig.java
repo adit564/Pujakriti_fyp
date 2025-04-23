@@ -61,7 +61,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((requests)->requests
                         .requestMatchers("/auth/login").permitAll()
-                        .requestMatchers("/api/payments/verify").permitAll() // Ensure this path is correct
+                        .requestMatchers("/api/payments/verify").permitAll()
                         .anyRequest().permitAll())
                 .exceptionHandling(ex->ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

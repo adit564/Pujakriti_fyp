@@ -16,19 +16,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserResponse {
-    private Integer userId;
-
     private String name;
 
     private String phone;
 
     private String email;
 
-    private User.Role role;
+    private String role;
 
-    private Boolean isActive;
-
-    public enum Role {
-        ADMIN, USER
-    }
 }

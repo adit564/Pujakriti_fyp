@@ -6,6 +6,8 @@ import { Dispatch } from "redux";
 import { Cart } from "../models/cart";
 import addressService from "./addressService";
 import { AddressFormValues } from "../models/address";
+import type { User } from "../models/user";
+import { types } from "util";
 
 axios.defaults.baseURL = "http://localhost:8081/api/";
 
@@ -17,28 +19,29 @@ interface OrderItemDTO {
   price: number;
 }
 
-interface OrderResponse {
-  orderId: number;
-  userId: number;
-  totalAmount: number;
-  address: number;
-  status: string;
-  discountCodeId?: number;
-  orderDate: number[];
-  orderItems: OrderItemDTO[];
-  paymentID?: number;
+
+interface OrdersItemDTO {
+  orderItemId: number;
+  productName?: string;
+  bundleName?: string;
+  quantity: number;
+  price: number;
 }
 
-interface PaymentResponse {
-  message: string | undefined;
-  paymentId: number;
-  orderId: number;
-  userId: number;
-  transactionId?: string;
-  amount: number;
-  status: "PENDING" | "COMPLETED" | "FAILED" | "REFUNDED";
-  paymentDate: string;
+export interface OrdersResponse {
+  orderId: number
+  totalAmount: number
+  addressCity: string
+  addressStreet: string
+  addressState: string
+  status: string
+  discountCode: string
+  discountRate: number
+  orderDate: string
+  orderItems: OrdersItemDTO[]
+  transactionId: string
 }
+
 
 axios.interceptors.request.use(
   (config) => {
@@ -174,6 +177,14 @@ const BundleList = {
       .then((types) => [{ id: 0, name: "All" }, ...types]),
   search: (keyword: string) =>
     requests.get(`bundles?keyword=${keyword}`).then((res) => res.content),
+  allCastes:()=>
+    requests
+    .get("bundles/castes")
+    .then((types)=>[{id:0, name:"All"},...types]),
+    allBundleCastes:()=>
+      requests
+      .get("bundles/bundleCastes")
+      .then((types)=>[{id:0, name:"All"},...types]),
 };
 
 const BundleImages = {
@@ -213,7 +224,6 @@ const Cartt = {
         discountRate,
         userId ?? 0
       );
-      console.log("Item added to cart: ", result);
       return result;
     } catch (error) {
       console.log("Failed to add item to cart: ", error);
@@ -223,7 +233,6 @@ const Cartt = {
   removeItem: async (cartItemId: number, dispatch: Dispatch) => {
     try {
       const result = await cartService.removeItemFromCart(cartItemId, dispatch);
-      console.log("Item removed from cart: ", result);
       return result;
     } catch (error) {
       console.log("Failed to remove item from cart: ", error);
@@ -329,15 +338,24 @@ const Orders = {
         cartId,
         ...(discountCode && { discountCode }),
       });
-      console.log("Creating order with URL:", `orders?${params.toString()}`);
+      // console.log("Creating order with URL:", `orders?${params.toString()}`);
       const response = await requests.post(`orders?${params.toString()}`, {});
-      console.log("Order response:", response);
-      return response as number; // Explicitly return as number
+      // console.log("Order response:", response);
+      return response as number;
     } catch (error) {
       console.log("Failed to create order: ", error);
       throw error;
     }
   },
+  getAllOrders: async(userId: number)=>{
+    try {
+      const response = await requests.get(`orders/${userId}`);
+      return response;
+    } catch (error) {
+      toast.error("Failed to fetch orders" + error);
+      throw error;
+    }
+  }
 };
 
 interface StatusResponse {
@@ -397,6 +415,29 @@ const Payments = {
   },
 };
 
+const User={
+  getUser: async(userId: number)=>{
+    try{
+      const response = await requests.get(`users/${userId}`)
+      return response;
+    }catch(error){
+      toast.error("Failed to fetch user" + error);
+      console.log("Failed to fetch user", error)
+      throw error;
+    }
+  },
+  updateUser: async (userId:number, userResponse: User) =>{
+    try{
+      const response = await requests.put(`users/update/${userId}`,userResponse);
+      return response;
+    }catch(error){
+      toast.error("Failed to update user" + error);
+      console.log("Failed to update user", error)
+      throw error;
+    }
+  }
+}
+
 const agent = {
   Cartt,
   ProductsList,
@@ -406,6 +447,9 @@ const agent = {
   Address,
   Orders,
   Payments,
+  User
 };
+
+
 
 export default agent;

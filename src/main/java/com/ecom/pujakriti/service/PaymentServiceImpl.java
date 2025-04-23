@@ -1,22 +1,28 @@
 package com.ecom.pujakriti.service;
-import com.ecom.pujakriti.entity.Order;
-import com.ecom.pujakriti.entity.Payment;
+
+import com.ecom.pujakriti.entity.*;
 import com.ecom.pujakriti.model.PaymentResponse;
-import com.ecom.pujakriti.repository.OrderRepository;
-import com.ecom.pujakriti.repository.PaymentRepository;
+import com.ecom.pujakriti.repository.*;
+import com.vladsch.flexmark.html.HtmlRenderer;
+import com.vladsch.flexmark.parser.Parser;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.xhtmlrenderer.pdf.ITextRenderer;
+import com.vladsch.flexmark.util.ast.Node;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.ByteArrayOutputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Base64;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service("paymentService")
 @Log4j2
@@ -30,6 +36,15 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Autowired
     private OrderRepository orderRepository;
+
+    @Autowired
+    private OrderItemRepository orderItemRepository; // Need to fetch OrderItems
+
+    @Autowired
+    private EmailService emailService;
+
+    @Autowired
+    private GuideRepository guideRepository;
 
     private static final String ESEWA_UAT_URL = "https://rc-epay.esewa.com.np/api/epay/main/v2/form";
     private static final String MERCHANT_CODE = "EPAYTEST";
@@ -128,6 +143,7 @@ public class PaymentServiceImpl implements PaymentService {
         return Base64.getEncoder().encodeToString(hash);
     }
 
+    @Transactional
     public PaymentResponse verifyPayment(String orderId, String amount, String transactionId) {
         log.info("Verifying payment for orderId: {}, amount: {}, transactionId: {}", orderId, amount, transactionId);
         try {
@@ -139,15 +155,46 @@ public class PaymentServiceImpl implements PaymentService {
             if (amount == null || transactionId == null) {
                 payment.setStatus(Payment.PaymentStatus.FAILED);
                 payment.setPaymentDate(LocalDateTime.now());
+                paymentRepository.save(payment);
+                log.info("Payment failed for orderId: {}, amount: {}, transactionId: {}", orderId, amount, transactionId);
             } else {
                 payment.setTransactionId(transactionId);
                 payment.setStatus(Payment.PaymentStatus.COMPLETED);
                 payment.setAmount(Double.parseDouble(amount));
                 payment.setPaymentDate(LocalDateTime.now());
-            }
 
-            paymentRepository.save(payment);
-            log.info("Payment updated: orderId={}, status={}", orderId, payment.getStatus());
+                paymentRepository.save(payment);
+                log.info("Payment updated: orderId={}, status={}", orderId, payment.getStatus());
+
+                // **START: Guide Retrieval and Email Sending After Successful Payment**
+                Order order = orderRepository.findById(orderIdInt)
+                        .orElseThrow(() -> new IllegalArgumentException("Order not found: " + orderIdInt));
+                List<OrderItem> orderItems = orderItemRepository.findByOrder(order);
+                List<Guide> guidesToSend = orderItems.stream()
+                        .filter(item -> item.getBundle() != null && item.getProduct() == null)
+                        .map(OrderItem::getBundle)
+                        .filter(bundle -> bundle.getPuja() != null)
+                        .map(Bundle::getPuja)
+                        .flatMap(puja -> guideRepository.findByPuja(puja).stream()) // Use the repository to find guides by Puja
+                        .filter(java.util.Objects::nonNull)
+                        .distinct() // To avoid sending the same guide multiple times if multiple bundles point to the same Puja
+                        .collect(Collectors.toList());
+
+                if (!guidesToSend.isEmpty()) {
+                    for (Guide guide : guidesToSend) {
+                        byte[] pdfBytes = generatePdfFromMarkdown(guide.getContent(), guide.getName());
+                        emailService.sendOrderConfirmationEmailWithAttachment(
+                                order.getUser().getEmail(),
+                                "Your Order Confirmation and Puja Guide",
+                                "Thank you for your order! Please find the guide for '" + guide.getName() + "' attached.",
+                                guide.getName() + ".pdf",
+                                pdfBytes
+                        );
+                    }
+                    log.info("Sent {} guides for orderId: {}", guidesToSend.size(), orderIdInt);
+                }
+                // **END: Guide Retrieval and Email Sending**
+            }
 
             return PaymentResponse.builder()
                     .paymentId(payment.getPaymentId())
@@ -180,4 +227,46 @@ public class PaymentServiceImpl implements PaymentService {
             return false;
         }
     }
+
+    private byte[] generatePdfFromMarkdown(String markdownContent, String guideName) {
+        try {
+            // 1. Parse Markdown to HTML
+            ITextRenderer pdfRenderer = new ITextRenderer();
+            Parser parser = Parser.builder().build();
+            com.vladsch.flexmark.util.ast.Node document = parser.parse(markdownContent);
+            HtmlRenderer renderer = HtmlRenderer.builder()
+                    .escapeHtml(true) // Ensure HTML special characters are escaped
+                    // Try enabling these extensions that might produce more XHTML-like output
+                    .extensions(java.util.Arrays.asList(
+                            com.vladsch.flexmark.ext.gfm.strikethrough.StrikethroughExtension.create(),
+                            com.vladsch.flexmark.ext.tables.TablesExtension.create(),
+                            com.vladsch.flexmark.ext.autolink.AutolinkExtension.create()
+                            // Add other extensions you might be using
+                    ))
+                    .build();
+            String htmlContent = renderer.render(document);
+            String xhtmlContent = "<html xmlns=\"http://www.w3.org/1999/xhtml\">" +
+                    "<head>" +
+                    "<title>" + guideName + "</title>" + // Optional title
+                    "</head>" +
+                    "<body>" +
+                    htmlContent +
+                    "</body>" +
+                    "</html>";
+            pdfRenderer.setDocumentFromString(xhtmlContent);
+            pdfRenderer.layout();
+
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            pdfRenderer.createPDF(outputStream);
+
+            log.info("Successfully generated PDF for guide: {}", guideName);
+            return outputStream.toByteArray();
+
+        } catch (Exception e) {
+            log.error("Error generating PDF for guide: {}", guideName, e);
+            return new byte[0]; // Return an empty byte array in case of an error
+        }
+    }
+
+
 }

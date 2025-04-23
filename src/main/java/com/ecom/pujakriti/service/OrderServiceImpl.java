@@ -1,7 +1,9 @@
 package com.ecom.pujakriti.service;
 
 import com.ecom.pujakriti.entity.*;
+import com.ecom.pujakriti.model.AddressResponse;
 import com.ecom.pujakriti.model.OrderResponse;
+import com.ecom.pujakriti.model.OrdersResponse;
 import com.ecom.pujakriti.repository.*;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -176,4 +178,53 @@ public class OrderServiceImpl implements OrderService {
                 .sum();
         return total * (1 - discountRate);
     }
+
+    @Override
+    public List<OrdersResponse> getOrdersByUserId(Integer userId) {
+        return orderRepository.findByUser_UserId((userId)).stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+
+    private OrdersResponse mapToResponse(Order order) {
+        return OrdersResponse.builder()
+                .orderId(order.getOrderId())
+                .totalAmount(order.getTotalAmount())
+                .addressState(order.getAddress().getState())
+                .addressCity(order.getAddress().getCity())
+                .addressStreet(order.getAddress().getStreet())
+                .status(String.valueOf(order.getStatus()))
+                .discountCode(order.getDiscountCode().getCode())
+                .discountRate(order.getDiscountCode().getDiscountRate())
+                .orderDate(order.getOrderDate())
+                .orderItems(
+                        order.getOrderItems().stream()
+                                .map(this::mapToOrdersItemDTO)
+                                .collect(Collectors.toList())
+                )
+                .transactionId(order.getPayment().getTransactionId())
+                .build();
+    }
+
+
+
+    private OrdersResponse.OrdersItemDTO mapToOrdersItemDTO(OrderItem orderItem) {
+        String productName = "";
+        String bundleName = "";
+        if (orderItem.getProduct() != null) {
+            productName = orderItem.getProduct().getName();
+        } else if (orderItem.getBundle() != null) {
+            bundleName = orderItem.getBundle().getName();
+        }
+
+        return OrdersResponse.OrdersItemDTO.builder()
+                .orderItemId(orderItem.getOrderItemId())
+                .productName(productName)
+                .bundleName(bundleName)
+                .quantity(orderItem.getQuantity())
+                .price(orderItem.getPrice())
+                .build();
+    }
+
 }

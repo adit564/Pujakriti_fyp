@@ -1,11 +1,14 @@
 package com.ecom.pujakriti.controller;
 
 import com.ecom.pujakriti.model.OrderResponse;
+import com.ecom.pujakriti.model.OrdersResponse;
 import com.ecom.pujakriti.service.OrderService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -29,9 +32,7 @@ public class OrderController {
         try {
             OrderResponse orderResponse = orderService.createOrder(userId, addressId, cartId, discountCode);
             log.info("Order created with ID: {}", orderResponse.getOrderId());
-            return new ResponseEntity<>(orderResponse.getOrderId(), HttpStatus.CREATED); // Return only the orderId
-            // Alternatively, if you prefer to return the entire OrderResponse:
-            // return new ResponseEntity<>(orderResponse, HttpStatus.CREATED);
+            return new ResponseEntity<>(orderResponse.getOrderId(), HttpStatus.CREATED);
         } catch (IllegalArgumentException | IllegalStateException e) {
             log.error("Failed to create order: {}", e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -43,8 +44,10 @@ public class OrderController {
         }
     }
 
-
-
+    @GetMapping("/{userId}")
+    public ResponseEntity<List<OrdersResponse>> getOrdersByUserId(@PathVariable Integer userId) {
+            return ResponseEntity.ok(orderService.getOrdersByUserId(userId));
+    }
 
 
 }

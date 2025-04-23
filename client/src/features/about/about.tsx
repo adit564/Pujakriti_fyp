@@ -1,7 +1,10 @@
+
 export default function About() {
   return (
     <div className="about_Page">
       <h2>Nepal’s</h2>
+      <br />
+      <br />
       <h2>First Guided Puja Store.</h2>
       <h4>
         We offer individual puja items and curated bundles for every

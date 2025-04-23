@@ -49,6 +49,7 @@
 .cart_item_detail p {
   font-size: 0.8vw;
   font-weight: 600;
+  width: 70%;
 }
 
 .cart_item_footer {

@@ -20,6 +20,7 @@ import PaymentInitiationPage from "../../features/payment/PaymentInitiationPage"
 import VerifyEmailPage from "../../features/auth/VerifyEmailPage";
 import ForgotPasswordForm from "../../features/auth/ForgotPasswordForm";
 import ResetPasswordForm from "../../features/auth/ResetPasswordForm";
+import ViewProfile from "../../features/auth/viewProfile";
 
 export const router = createBrowserRouter([
   {
@@ -38,7 +39,7 @@ export const router = createBrowserRouter([
 
       { path: "search/", element: <SearchResults /> },
 
-      // { path: "profile", element: < /> },
+      { path: "view-profile", element: <ViewProfile /> },
 
 
       { path: "login", element: <LoginForm /> },

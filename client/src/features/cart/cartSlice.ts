@@ -17,7 +17,6 @@ export const cartSlice = createSlice({
     initialState,
     reducers: {
         setCart: (state, action) => {
-            console.log("New Cart state: ", action.payload);
             state.cart = action.payload;
         },
         clearCart: (state) => {

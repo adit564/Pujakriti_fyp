@@ -22,7 +22,6 @@ class cartService {
     try {
       const response = await axios.get(`${this.apiUrl}/${cartId}`);
       const cart = response.data;
-      console.log("Fetched cart from API:", cart);
       
       // Validate cart items
       for (const item of cart.cartItems) {
@@ -51,7 +50,6 @@ class cartService {
       const cartId = localStorage.getItem("cart_id");
       if (cartId) {
         const cart = await this.getCartById(cartId);
-        console.log("Cart retrieved from getCart:", cart);
         localStorage.setItem("cart", JSON.stringify(cart));
         return cart;
       } else {
@@ -65,13 +63,6 @@ class cartService {
 
   async addToCart(item: any, quantity = 1, dispatch: Dispatch, discountRate: number = 0, userId: number) {
     try {
-      // Log incoming item data
-      console.log("Adding item to cart:", {
-        productId: item.productId,
-        bundleId: item.bundleId,
-        price: item.price,
-        stock: item.stock
-      });
 
       // Validate item data
       if (item.price === null || item.price === undefined || item.price <= 0) {
@@ -91,9 +82,7 @@ class cartService {
       }
 
       const itemToAdd = this.mapItemToCartItem(item);
-      console.log("Mapped cart item:", itemToAdd);
       cart.cartItems = this.upsertItems(cart.cartItems, itemToAdd, quantity);
-      console.log("Cart before setCart:", cart);
       await this.setCart(cart, dispatch);
 
       const totals = this.calculateTotals(cart, discountRate);
@@ -120,9 +109,7 @@ class cartService {
         userId,
         cartItems: [],
       };
-      console.log("Creating cart:", newCart);
       const response = await axios.post(this.apiUrl, newCart);
-      console.log("Created cart response:", response.data);
       localStorage.setItem("cart_id", newCart.cartId);
       localStorage.setItem("cart", JSON.stringify(newCart));
       return newCart;
@@ -248,8 +235,6 @@ class cartService {
 
   async setCart(cart: Cart, dispatch: Dispatch) {
     try {
-      // Log cart before validation
-      console.log("Cart before validation in setCart:", cart);
 
       // Validate cart items
       for (const item of cart.cartItems) {
@@ -267,7 +252,6 @@ class cartService {
         }
       }
       const response = await axios.post<Cart>(this.apiUrl, cart);
-      console.log("Response from POST /api/cart:", response.data);
       localStorage.setItem("cart", JSON.stringify(response.data));
       dispatch(setCart(response.data));
     } catch (error) {

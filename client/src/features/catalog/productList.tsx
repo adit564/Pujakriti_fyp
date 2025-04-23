@@ -95,11 +95,6 @@ export default function ProductList({ products }: Props) {
     }
   }
 
-
-
-
-  
-
   const handleCategoryChange = (categoryName: string | null) => {
     setSelectedCategory(categoryName);
   };

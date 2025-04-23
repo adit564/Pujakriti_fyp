@@ -3,10 +3,14 @@ package com.ecom.pujakriti.controller;
 
 import com.ecom.pujakriti.entity.Bundle;
 import com.ecom.pujakriti.entity.Puja;
+import com.ecom.pujakriti.model.BundleCasteResponse;
 import com.ecom.pujakriti.model.BundleResponse;
+import com.ecom.pujakriti.model.CasteResponse;
 import com.ecom.pujakriti.model.PujaResponse;
+import com.ecom.pujakriti.service.BundleCasteService;
 import com.ecom.pujakriti.service.BundleService;
 import com.ecom.pujakriti.service.PujaService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,11 +26,15 @@ import java.util.List;
 public class BundleController {
 
     private final BundleService bundleService;
+
     private final PujaService pujaService;
 
-    public BundleController(BundleService bundleService, PujaService pujaService) {
+    private final BundleCasteService bundleCasteService;
+
+    public BundleController(BundleService bundleService, PujaService pujaService, BundleCasteService bundleCasteService) {
         this.bundleService = bundleService;
         this.pujaService = pujaService;
+        this.bundleCasteService = bundleCasteService;
     }
 
 
@@ -71,5 +79,21 @@ public class BundleController {
     public List<Bundle> searchBundles(String keyword) {
         return bundleService.searchBundles(keyword);
     }
+
+
+    @GetMapping("/bundleCastes")
+    public ResponseEntity<List<BundleCasteResponse>> getBundleCastes(){
+        List<BundleCasteResponse> bundleCasteResponses = bundleCasteService.getBundleCastes();
+
+        return new ResponseEntity<>(bundleCasteResponses,HttpStatus.OK);
+    }
+
+    @GetMapping("/castes")
+    public ResponseEntity<List<CasteResponse>> getCastes(){
+        List<CasteResponse> casteResponses = bundleCasteService.getCastes();
+
+        return new ResponseEntity<>(casteResponses,HttpStatus.OK);
+    }
+
 
 }

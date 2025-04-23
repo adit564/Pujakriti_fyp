@@ -22,7 +22,9 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public UserResponse getUserById(Integer id) {
-        return null;
+        return userRepository.findByUserId(id).stream()
+                .map(this::convertToUserResponse)
+                .toList().getFirst();
     }
 
     @Override
@@ -40,15 +42,27 @@ public class UserServiceImpl implements UserService{
         return userResponses;
     }
 
+    @Override
+    public UserResponse updateUser(Integer userId,String username, String phone) {
+        log.info("Updating user");
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User with id " + userId + " not found"));
+
+        user.setName(username);
+        user.setPhone(phone);
+        User updated = userRepository.save(user);
+
+        return convertToUserResponse(updated);
+    }
+
+
     private UserResponse convertToUserResponse(User user) {
 
     return UserResponse.builder()
-            .userId(user.getUserId())
             .name(user.getName())
             .phone(user.getPhone())
             .email(user.getEmail())
-            .role(user.getRole())
-            .isActive(user.getIsActive())
+            .role(user.getRole().toString())
             .build();
     }
 

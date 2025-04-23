@@ -10,4 +10,8 @@ public interface UserService {
     UserResponse getUserById(Integer id);
 
     List<UserResponse> getUsers();
+
+
+    UserResponse updateUser(Integer userId,String username, String phone);
+
 }

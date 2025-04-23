@@ -158,7 +158,7 @@ export default function Navbar() {
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
               >
-                <NavLink to="/profile" className="dropdown_item">
+                <NavLink to="/view-profile" className="dropdown_item">
                   Profile
                 </NavLink>
                 <NavLink to="/addressList" className="dropdown_item">

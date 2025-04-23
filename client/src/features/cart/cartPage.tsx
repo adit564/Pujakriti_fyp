@@ -9,6 +9,7 @@ import agent from "../../app/api/agent";
 import cartService from "../../app/api/cartService";
 import { setCart, clearCart } from "./cartSlice";
 import { toast } from "react-toastify";
+import { Address } from "../../app/models/address";
 
 interface CartItemDetail {
   name: string;
@@ -17,47 +18,8 @@ interface CartItemDetail {
   imageUrl?: string;
 }
 
-interface Address {
-  addressId: number;
-  user: number;
-  city: string;
-  street: string;
-  state: string;
-  isDefault: boolean;
-}
-
-interface OrderItemDTO {
-  orderItemId: number;
-  productId?: number;
-  bundleId?: number;
-  quantity: number;
-  price: number;
-}
-
-interface OrderResponse {
-  orderId: number;
-  userId: number;
-  totalAmount: number;
-  address: number;
-  status: string;
-  discountCodeId?: number;
-  orderDate: number[];
-  orderItems: OrderItemDTO[];
-  paymentID?: number;
-}
-
-interface PaymentResponse {
-  paymentId: number;
-  orderId: number;
-  userId: number;
-  transactionId?: string;
-  amount: number;
-  status: "PENDING" | "COMPLETED" | "FAILED" | "REFUNDED";
-  paymentDate: string;
-}
-
 export default function CartPage() {
-  const [quantity, setQuantity] = useState(1);
+  const [quantity] = useState(1);
   const [itemDetails, setItemDetails] = useState<
     Record<number, CartItemDetail>
   >({});
@@ -227,20 +189,12 @@ export default function CartPage() {
         }
         await agent.Cartt.setCart(newCart, dispatch);
       }
-
-      console.log("Creating order with:", {
-        userId: currentUser.user_Id,
-        addressId: selectedAddressId,
-        cartId: currentCartId,
-        discountCode: discount?.code,
-      });
       const orderId: number = await agent.Orders.create( 
         currentUser.user_Id,
         selectedAddressId,
         currentCartId,
         discount?.code
       );
-      console.log("Order created with ID:", orderId);
 
       if (orderId === undefined || orderId === null) {
         throw new Error(
@@ -249,7 +203,6 @@ export default function CartPage() {
       }
 
       const totals = cartService.getCartTotals(cart, discountRate);
-      console.log("Initiating payment for orderId:", orderId, "amount:", totals.grandTotal);
 
       window.location.href = `/payment/initiate/${orderId}/${totals.grandTotal}`;
 

@@ -1,5 +1,6 @@
 package com.ecom.pujakriti.model;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,7 +10,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CasteResponse {
+public class BundleCasteResponse {
+    private Integer id;
+    private Integer bundleId;
     private Integer casteId;
-    private String name;
 }

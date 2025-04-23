@@ -9,7 +9,15 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CasteResponse {
-    private Integer casteId;
+public class GuideResponse {
+    private Integer guideId;
+
     private String name;
+
+    private String description;
+
+    private String content;
+
+    private Integer pujaId;
+
 }

@@ -3,12 +3,11 @@ package com.ecom.pujakriti.controller;
 
 import com.ecom.pujakriti.model.UserResponse;
 import com.ecom.pujakriti.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -16,12 +15,11 @@ import java.util.List;
 @RequestMapping("/api/users")
 public class UserController {
 
-    private final UserService userService;
+    @Autowired
+    private UserService userService;
 
-
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
     @GetMapping("/{id}")
     public ResponseEntity<UserResponse> getUserById(@PathVariable("id") Integer id) {
@@ -34,6 +32,11 @@ public class UserController {
     public ResponseEntity<List<UserResponse>> getUsers() {
         List<UserResponse> userResponses = userService.getUsers();
         return new ResponseEntity<>(userResponses, HttpStatus.OK);
+    }
+
+    @PutMapping("/update/{userId}")
+    public ResponseEntity<UserResponse> updateUser(@PathVariable Integer userId, @RequestBody UserResponse userResponse) {
+        return ResponseEntity.ok(userService.updateUser(userId, userResponse.getName(),userResponse.getPhone()));
     }
 
 }
