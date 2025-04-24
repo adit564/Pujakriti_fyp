@@ -4,6 +4,7 @@ import com.ecom.pujakriti.model.BundleImageResponse;
 import com.ecom.pujakriti.model.ProductImageResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface ImageService {
 
@@ -15,6 +16,7 @@ Page<ProductImageResponse> getProductImages(Pageable pageable, Integer productId
 
 Page<BundleImageResponse> getBundleImages(Pageable pageable, Integer bundleId, String keyword);
 
+void uploadBundleImage(Integer bundleId, MultipartFile imageFile);
 
 }
 

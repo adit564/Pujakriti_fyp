@@ -2,14 +2,13 @@ package com.ecom.pujakriti.controller;
 
 
 import com.ecom.pujakriti.entity.Bundle;
-import com.ecom.pujakriti.entity.Puja;
-import com.ecom.pujakriti.model.BundleCasteResponse;
-import com.ecom.pujakriti.model.BundleResponse;
-import com.ecom.pujakriti.model.CasteResponse;
-import com.ecom.pujakriti.model.PujaResponse;
+import com.ecom.pujakriti.exceptions.ProductNotFoundException;
+import com.ecom.pujakriti.model.*;
 import com.ecom.pujakriti.service.BundleCasteService;
 import com.ecom.pujakriti.service.BundleService;
+import com.ecom.pujakriti.service.GuideService;
 import com.ecom.pujakriti.service.PujaService;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,22 +19,26 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/api/bundles")
+@Log4j2
 public class BundleController {
 
-    private final BundleService bundleService;
 
-    private final PujaService pujaService;
+    @Autowired
+    private BundleService bundleService;
 
-    private final BundleCasteService bundleCasteService;
+    @Autowired
+    private PujaService pujaService;
 
-    public BundleController(BundleService bundleService, PujaService pujaService, BundleCasteService bundleCasteService) {
-        this.bundleService = bundleService;
-        this.pujaService = pujaService;
-        this.bundleCasteService = bundleCasteService;
-    }
+    @Autowired
+    private GuideService guideService;
+
+    @Autowired
+    private BundleCasteService bundleCasteService;
 
 
     @GetMapping("/{id}")
@@ -75,6 +78,15 @@ public class BundleController {
         return new ResponseEntity<>(pujaResponses,HttpStatus.OK);
     }
 
+
+    @GetMapping("/guides")
+    public ResponseEntity<List<GuideResponse>> getGuides(){
+        List<GuideResponse> guideResponses = guideService.getGuides();
+
+        return new ResponseEntity<>(guideResponses,HttpStatus.OK);
+    }
+
+
     @GetMapping("/search")
     public List<Bundle> searchBundles(String keyword) {
         return bundleService.searchBundles(keyword);
@@ -93,6 +105,44 @@ public class BundleController {
         List<CasteResponse> casteResponses = bundleCasteService.getCastes();
 
         return new ResponseEntity<>(casteResponses,HttpStatus.OK);
+    }
+
+
+    @PostMapping("/admin/Add") // New endpoint for adding bundles
+    public ResponseEntity<BundleResponse> addBundle(@RequestBody AddBundleRequest addBundleRequest) {
+        try {
+            BundleResponse savedBundle = bundleService.addBundle(addBundleRequest);
+            return new ResponseEntity<>(savedBundle, HttpStatus.CREATED);
+        } catch (Exception e) {
+            log.error("Error adding bundle:", e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    @PutMapping("/admin/update/{bundleId}")
+    public ResponseEntity<?> updateBundle(@PathVariable Integer bundleId, @RequestBody EditBundleRequest request) {
+        try {
+            BundleResponse updatedBundle = bundleService.updateBundle(bundleId, request);
+            return ResponseEntity.ok(updatedBundle);
+        } catch (ProductNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", "Failed to update bundle."));
+        }
+    }
+
+
+    @DeleteMapping("/admin/delete/{id}")
+    public ResponseEntity<?> deleteBundle(@PathVariable Integer id) {
+        try {
+            bundleService.deleteBundle(id);
+            return ResponseEntity.ok(Map.of("message", "Bundle deleted successfully."));
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", "Failed to delete bundle."));
+        }
     }
 
 

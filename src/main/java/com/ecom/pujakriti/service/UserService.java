@@ -1,5 +1,6 @@
 package com.ecom.pujakriti.service;
 
+import com.ecom.pujakriti.model.AdminUserResponse;
 import com.ecom.pujakriti.model.UserResponse;
 
 import java.util.List;
@@ -13,5 +14,9 @@ public interface UserService {
 
 
     UserResponse updateUser(Integer userId,String username, String phone);
+
+    AdminUserResponse updateUserActiveStatus(Integer userId, boolean isActive);
+
+    List<AdminUserResponse> getUsersForAdmin();
 
 }

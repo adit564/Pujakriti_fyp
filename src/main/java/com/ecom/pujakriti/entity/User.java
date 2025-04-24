@@ -43,7 +43,7 @@ public class User {
     @Column(name = "IsActive", columnDefinition = "BOOLEAN DEFAULT TRUE")
     private Boolean isActive;
 
-    @Column(name = "isEmailVerified", nullable = false)
+    @Column(name = "isEmailVerified", columnDefinition = "BOOLEAN DEFAULT FALSE", nullable = false)
     private boolean isEmailVerified = false;
 
 

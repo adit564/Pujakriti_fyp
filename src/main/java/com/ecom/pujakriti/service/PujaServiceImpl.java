@@ -4,6 +4,7 @@ import com.ecom.pujakriti.entity.Puja;
 import com.ecom.pujakriti.model.PujaResponse;
 import com.ecom.pujakriti.repository.PujaRepository;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -14,11 +15,9 @@ import java.util.stream.Collectors;
 @Log4j2
 public class PujaServiceImpl implements PujaService {
 
-    private final PujaRepository pujaRepository;
+    @Autowired
+    private PujaRepository pujaRepository;
 
-    public PujaServiceImpl(PujaRepository pujaRepository) {
-        this.pujaRepository = pujaRepository;
-    }
 
 
 

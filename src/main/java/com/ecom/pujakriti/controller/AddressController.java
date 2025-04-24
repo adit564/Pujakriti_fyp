@@ -47,5 +47,4 @@ public class AddressController {
         return ResponseEntity.ok(addressService.setDefaultAddress(addressId, userId));
     }
 
-
 }

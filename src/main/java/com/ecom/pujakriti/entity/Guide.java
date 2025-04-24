@@ -25,7 +25,8 @@ public class Guide {
     @Column(name = "Description")
     private String description;
 
-    @Column(name = "Content")
+    @Lob
+    @Column(name = "Content", columnDefinition = "LONGTEXT")
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
