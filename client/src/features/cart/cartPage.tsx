@@ -36,7 +36,7 @@ export default function CartPage() {
   const discount = useAppSelector(
     (state: RootState) => state.discount.discountCode
   );
-  const discountRate = discount?.discountRate ?? 0;
+  let discountRate = discount?.discountRate ?? 0;
 
   const userString = localStorage.getItem("user");
   let currentUser: { user_Id: number | undefined } | null = null;
@@ -165,6 +165,10 @@ export default function CartPage() {
     if (cart.cartItems.length === 0) {
       toast.error("Cart is empty");
       return;
+    }
+
+    if(discountRate === null || discountRate === undefined){
+      discountRate = 0;
     }
 
     setLoading(true);

@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Base64;
+import java.util.List;
 import java.util.Map;
 
 import org.json.JSONObject;
@@ -83,7 +84,7 @@ public class PaymentController {
             if ("failed".equalsIgnoreCase(status)) {
                 log.warn("Processing failed payment for orderId: {}, data: {}", orderId, eSewaData);
                 paymentService.verifyPayment(orderId, null, null);
-                return ResponseEntity.badRequest().body(new StatusResponse("FAILED", "Payment failed"));
+                return ResponseEntity.ok(new StatusResponse("FAILED", "Payment verification failed"));
             }
 
             // Handle eSewa callback with data
@@ -132,6 +133,15 @@ public class PaymentController {
             log.error("Failed to verify payment for orderId: {}", orderId, e);
             return ResponseEntity.internalServerError().body(new StatusResponse("ERROR", "Failed to verify payment: " + e.getMessage()));
         }
+    }
+
+
+
+    @GetMapping
+    public ResponseEntity<List<PaymentResponse>> getAllPayments(@RequestParam(value = "status", required = false) String status) {
+        log.info("Fetching all payments.  Status filter: {}", status);
+        List<PaymentResponse> payments = paymentService.getAllPayments(status);
+        return ResponseEntity.ok(payments);
     }
 
 

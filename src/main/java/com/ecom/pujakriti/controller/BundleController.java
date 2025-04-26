@@ -2,6 +2,7 @@ package com.ecom.pujakriti.controller;
 
 
 import com.ecom.pujakriti.entity.Bundle;
+import com.ecom.pujakriti.entity.Puja;
 import com.ecom.pujakriti.exceptions.ProductNotFoundException;
 import com.ecom.pujakriti.model.*;
 import com.ecom.pujakriti.service.BundleCasteService;
@@ -79,11 +80,52 @@ public class BundleController {
     }
 
 
+    @GetMapping("/pujas/{pujaId}")
+    public ResponseEntity<PujaResponse> getPujaById(@PathVariable Integer pujaId) {
+        try {
+            PujaResponse puja = pujaService.findPujaById(pujaId);
+            return ResponseEntity.ok(puja);
+        } catch (ProductNotFoundException e) {
+          return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PutMapping("/pujas/{pujaId}")
+    public ResponseEntity<?> updatePuja(@PathVariable Integer pujaId, @RequestBody PujaResponse updatedPuja) {
+        try {
+            PujaResponse puja = pujaService.updatePuja(pujaId, updatedPuja);
+            return ResponseEntity.ok(puja);
+        } catch (ProductNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", e.getMessage()));
+        }
+    }
+
+
     @GetMapping("/guides")
     public ResponseEntity<List<GuideResponse>> getGuides(){
         List<GuideResponse> guideResponses = guideService.getGuides();
 
         return new ResponseEntity<>(guideResponses,HttpStatus.OK);
+    }
+
+    @GetMapping("/guides/{guideId}")
+    public ResponseEntity<GuideResponse> getGuideById(@PathVariable Integer guideId) {
+       try {
+           GuideResponse guideResponse = guideService.getGuideById(guideId);
+           return ResponseEntity.ok(guideResponse);
+       }catch (ProductNotFoundException e){
+           return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+       }
+    }
+
+    @PutMapping("/guides/{guideId}")
+    public ResponseEntity<?> updateGuide(@PathVariable Integer guideId, @RequestBody GuideResponse updatedGuide) {
+        try {
+            GuideResponse guideResponse = guideService.updateGuide(guideId, updatedGuide);
+            return ResponseEntity.ok(guideResponse);
+        } catch (ProductNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", e.getMessage()));
+        }
     }
 
 
@@ -100,11 +142,29 @@ public class BundleController {
         return new ResponseEntity<>(bundleCasteResponses,HttpStatus.OK);
     }
 
-    @GetMapping("/castes")
-    public ResponseEntity<List<CasteResponse>> getCastes(){
-        List<CasteResponse> casteResponses = bundleCasteService.getCastes();
+    @PostMapping("/bundlecastes")
+    public ResponseEntity<BundleCasteResponse> addBundleCaste(@RequestBody BundleCasteRequest bundleCasteRequest) {
+        log.info("Adding bundle caste: {}", bundleCasteRequest);
+        BundleCasteResponse addedBundleCaste = bundleCasteService.addBundleCaste(bundleCasteRequest);
+        return new ResponseEntity<>(addedBundleCaste, HttpStatus.CREATED);
+    }
 
-        return new ResponseEntity<>(casteResponses,HttpStatus.OK);
+    @PutMapping("/bundlecastes/{id}")
+    public ResponseEntity<BundleCasteResponse> updateBundleCaste(@PathVariable Integer id, @RequestBody BundleCasteRequest bundleCasteRequest) {
+        log.info("Updating bundle caste with ID {} to: {}", id, bundleCasteRequest);
+        try {
+            BundleCasteResponse updatedBundleCaste = bundleCasteService.updateBundleCaste(id, bundleCasteRequest);
+            return new ResponseEntity<>(updatedBundleCaste, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @DeleteMapping("/bundlecastes/{id}")
+    public ResponseEntity<Void> deleteBundleCaste(@PathVariable Integer id) {
+        log.info("Deleting bundle caste with ID: {}", id);
+        bundleCasteService.deleteBundleCaste(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 
@@ -145,5 +205,45 @@ public class BundleController {
         }
     }
 
+
+    @GetMapping("/castes")
+    public ResponseEntity<List<CasteResponse>> getCastes(){
+        List<CasteResponse> casteResponses = bundleCasteService.getCastes();
+
+        return new ResponseEntity<>(casteResponses,HttpStatus.OK);
+    }
+
+
+    @GetMapping("/caste/{casteId}")
+    public ResponseEntity<CasteResponse> getCasteById(@PathVariable Integer casteId) {
+        CasteResponse casteResponse = bundleCasteService.getCasteById(casteId);
+        return new ResponseEntity<>(casteResponse,HttpStatus.OK);
+    }
+
+    @PostMapping("/castes")
+    public ResponseEntity<?> addCaste(@RequestBody CasteResponse casteResponse) {
+        CasteResponse savedCaste = bundleCasteService.addCaste(casteResponse);
+        return new ResponseEntity<>(savedCaste, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/castes/{casteId}")
+    public ResponseEntity<?> updateCaste(@PathVariable Integer casteId, @RequestBody CasteResponse updatedCasteResponse) {
+        try {
+            CasteResponse savedCaste = bundleCasteService.updateCaste(casteId, updatedCasteResponse);
+            return new ResponseEntity<>(savedCaste, HttpStatus.OK);
+        }catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    @DeleteMapping("/castes/{casteId}")
+    public ResponseEntity<?> deleteCaste(@PathVariable Integer casteId) {
+        try {
+            bundleCasteService.deleteCaste(casteId);
+            return ResponseEntity.ok(Map.of("message", "Caste deleted successfully."));
+        }catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", e.getMessage()));
+        }
+    }
 
 }

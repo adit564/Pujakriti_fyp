@@ -118,6 +118,38 @@ public class ProductController {
         return new ResponseEntity<>(categoryResponses,HttpStatus.OK);
     }
 
+    @GetMapping("/category/{categoryId}")
+    public ResponseEntity<CategoryResponse> getCategoryByID(@PathVariable Integer categoryId) {
+        CategoryResponse categoryResponse = categoryService.getCategoryById(categoryId);
+        return new ResponseEntity<>(categoryResponse,HttpStatus.OK);
+    }
+
+    @PostMapping("/categories")
+    public ResponseEntity<?> addCategory(@RequestBody CategoryResponse newCategory) {
+        CategoryResponse savedCategory = categoryService.saveCategory(newCategory);
+        return new ResponseEntity<>(savedCategory, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/categories/{categoryId}")
+    public ResponseEntity<?> updateCategory(@PathVariable Integer categoryId, @RequestBody CategoryResponse updatedCategory) {
+        try {
+            CategoryResponse category = categoryService.updateCategory(categoryId, updatedCategory);
+            return ResponseEntity.ok(category);
+        } catch (ProductNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", e.getMessage()));
+        }
+    }
+
+    @DeleteMapping("/categories/{categoryId}")
+    public ResponseEntity<?> deleteCategory(@PathVariable Integer categoryId) {
+        try {
+            categoryService.deleteCategory(categoryId);
+            return ResponseEntity.ok(Map.of("message", "Category deleted successfully."));
+        } catch (ProductNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", e.getMessage()));
+        }
+    }
+
     @GetMapping("/search")
     public List<Product> searchProducts(String keyword) {
         return productService.searchProducts(keyword);

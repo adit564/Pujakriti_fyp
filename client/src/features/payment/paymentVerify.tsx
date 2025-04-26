@@ -24,42 +24,37 @@ export default function PaymentVerify() {
       const orderId = searchParams.get("oid");
       const amount = searchParams.get("amt");
       const transactionId = searchParams.get("refId");
-
-      if (orderId && amount && transactionId) {
+  
+  
+      if (orderId) {
         try {
           const response: StatusResponse = await agent.Payments.verify(orderId, amount, transactionId);
           if (response?.status === 'COMPLETED') {
             setPaymentStatus('COMPLETED');
             toast.success(response.message || 'Payment successful!');
             dispatch(clearCart());
-            // setTimeout(() => navigate('/checkout/success'), 3000);
           } else {
             setError(response?.message || 'Payment verification failed.');
             setPaymentStatus('FAILED');
             toast.error(response?.message || 'Payment verification failed.');
-            // setTimeout(() => navigate('/checkout/failed'), 3000);
+            dispatch(clearCart());
           }
         } catch (err: any) {
           setError(err.response?.data?.message || err.message || 'Error verifying payment.');
           setPaymentStatus('FAILED');
-          toast.error(err.response?.data?.message || err.message || 'Error verifying payment.');
-          // setTimeout(() => navigate('/checkout/failed'), 3000);
+          toast.error(err.response?.data?.message || 'Error verifying payment.');
+          dispatch(clearCart());
         }
-      } else if (status === 'FAILED' && orderId) {
-        setError('Payment was unsuccessful.');
-        setPaymentStatus('FAILED');
-        toast.error('Payment was unsuccessful.');
-        // setTimeout(() => navigate('/checkout/failed'), 3000);
       } else {
         setError('Invalid payment verification parameters.');
         setPaymentStatus('FAILED');
         toast.error('Invalid payment verification parameters.');
-        // setTimeout(() => navigate('/checkout/failed'), 3000);
+        dispatch(clearCart());
       }
     };
-
+  
     processPayment();
-  }, [searchParams, dispatch, navigate]);
+  }, []);
 
   return (
     <div className="payment-verify-container">

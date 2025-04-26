@@ -17,11 +17,12 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class ReviewResponse {
     private Integer reviewId;
-    private User user;
 
-    private Product product;
+    private Integer userId;
 
-    private Bundle bundle;
+    private Integer productId;
+
+    private Integer bundleId;
 
     private Integer rating;
 

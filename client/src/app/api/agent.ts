@@ -389,24 +389,20 @@ const Payments = {
   },
   verify: async (
     orderId: string,
-    amount: string,
-    transactionId: string
+    amount: string | null,
+    transactionId: string | null
   ): Promise<StatusResponse> => {
     try {
+      const status = new URLSearchParams(window.location.search).get("status") || "success";
+      
       const params = new URLSearchParams({
-        orderId: orderId,
-        amt: amount,
-        refId: transactionId,
+        orderId,
+        status,
+        ...(amount && { amt: amount }),
+        ...(transactionId && { refId: transactionId }),
       });
-      console.log(
-        "Verifying payment with URL:",
-        `payments/verify?${params.toString()}`
-      );
-      // const response = await requests.get(`payments/verify?${params.toString()}`);
-      const response = await requests.get(
-        `payments/verify?orderId=${orderId}&amt=${amount}&refId=${transactionId}`
-      );
-      console.log("Payment verify response:", response);
+  
+      const response = await requests.get(`payments/verify?${params.toString()}`);
       return response;
     } catch (error) {
       console.log("Failed to verify payment: ", error);

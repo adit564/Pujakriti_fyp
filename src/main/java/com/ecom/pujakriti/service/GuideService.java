@@ -9,4 +9,8 @@ public interface GuideService {
 
 
     List<GuideResponse> getGuides();
+
+    GuideResponse getGuideById(Integer guideId);
+
+    GuideResponse updateGuide(Integer guideId, GuideResponse updatedGuide);
 }

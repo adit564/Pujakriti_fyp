@@ -1,5 +1,7 @@
 package com.ecom.pujakriti.controller;
 
+import com.ecom.pujakriti.exceptions.ProductNotFoundException;
+import com.ecom.pujakriti.model.AdminOrdersResponse;
 import com.ecom.pujakriti.model.OrderResponse;
 import com.ecom.pujakriti.model.OrdersResponse;
 import com.ecom.pujakriti.service.OrderService;
@@ -9,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -49,5 +52,32 @@ public class OrderController {
             return ResponseEntity.ok(orderService.getOrdersByUserId(userId));
     }
 
+
+    @GetMapping
+    public ResponseEntity<List<AdminOrdersResponse>> getAllOrders() {
+        log.info("Fetching all orders for admin");
+        List<AdminOrdersResponse> orders = orderService.getAllOrdersForAdmin();
+        return ResponseEntity.ok(orders);
+    }
+
+
+    @PutMapping("/{orderId}/status")
+    public ResponseEntity<?> updateOrderStatus(@PathVariable Integer orderId, @RequestBody Map<String, String> payload) {
+        String newStatus = payload.get("status");
+        if (newStatus == null || newStatus.isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("message", "New status cannot be empty."));
+        }
+        try {
+            log.info("Updating order status for orderId: {} to status: {}", orderId, newStatus);
+            OrderResponse updatedOrder = orderService.updateOrderStatus(orderId, newStatus);
+            return ResponseEntity.ok(updatedOrder);
+        } catch (ProductNotFoundException e) {
+            log.error("Order not found: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", e.getMessage()));
+        } catch (IllegalArgumentException e) {
+            log.error("Invalid order status: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", e.getMessage()));
+        }
+    }
 
 }

@@ -46,11 +46,36 @@ public class PaymentServiceImpl implements PaymentService {
     @Autowired
     private GuideRepository guideRepository;
 
+
+    public List<PaymentResponse> getAllPayments(String status) {
+        List<Payment> payments;
+        if (status != null && !status.isEmpty()) {
+            log.info("Filtering payments by status: {}", status);
+            payments = paymentRepository.findByStatus(Payment.PaymentStatus.valueOf(status)); // Assuming you have a findByStatusIgnoreCase method
+        } else {
+            log.info("Retrieving all payments");
+            payments = paymentRepository.findAll();
+        }
+        return payments.stream()
+                .map(this::convertToPaymentResponse) // and this
+                .collect(Collectors.toList());
+    }
+    private PaymentResponse convertToPaymentResponse(Payment payment){
+        return PaymentResponse.builder()
+                .paymentId(payment.getPaymentId())
+                .orderId(payment.getOrder().getOrderId())
+                .userId(payment.getUser().getUserId())
+                .transactionId(payment.getTransactionId())
+                .amount(payment.getAmount())
+                .status(payment.getStatus())
+                .paymentDate(payment.getPaymentDate())
+                .build();
+    }
+
+
     private static final String ESEWA_UAT_URL = "https://rc-epay.esewa.com.np/api/epay/main/v2/form";
     private static final String MERCHANT_CODE = "EPAYTEST";
     private static final String SECRET_KEY = "8gBm/:&EnhH.1/q";
-    private static final String ESEWA_STATUS_URL = "https://rc-epay.esewa.com.np/api/epay/transaction/status/";
-
 
     @Transactional
     public String initiatePayment(Integer orderId, String amount) {
@@ -100,9 +125,10 @@ public class PaymentServiceImpl implements PaymentService {
                     URLEncoder.encode("ESEWA_REF_" + transactionUuid.substring(0, 8), StandardCharsets.UTF_8.toString())
             );
             String failureUrl = String.format(
-                    "https://localhost:3000/payment-verify?status=failed&oid=%s&amt=%s",
+                    "https://localhost:3000/payment-verify?status=failed&oid=%s&amt=%s&refId=%s",
                     URLEncoder.encode(orderId.toString(), StandardCharsets.UTF_8.toString()),
-                    URLEncoder.encode(amount, StandardCharsets.UTF_8.toString())
+                    URLEncoder.encode(amount, StandardCharsets.UTF_8.toString()),
+                    URLEncoder.encode("ESEWA_REF_" + transactionUuid.substring(0, 8), StandardCharsets.UTF_8.toString())
             );
 
             String signedFieldNames = "total_amount,transaction_uuid,product_code";
@@ -127,13 +153,12 @@ public class PaymentServiceImpl implements PaymentService {
             return form;
 
         } catch (IllegalStateException e) {
-            throw e; // Re-throw the "Payment already completed" exception
+            throw e;
         } catch (Exception e) {
             log.error("Failed to initiate payment for orderId: {}", orderId, e);
             throw new RuntimeException("Payment initiation failed: " + e.getMessage(), e);
         }
     }
-
 
     public String generateHmacSignature(String data, String secretKey) throws Exception {
         Mac mac = Mac.getInstance("HmacSHA256");
@@ -155,6 +180,10 @@ public class PaymentServiceImpl implements PaymentService {
             if (amount == null || transactionId == null) {
                 payment.setStatus(Payment.PaymentStatus.FAILED);
                 payment.setPaymentDate(LocalDateTime.now());
+                Order order = orderRepository.findById(orderIdInt)
+                        .orElseThrow(() -> new IllegalArgumentException("Order not found for orderId: " + orderIdInt));
+                order.setStatus(Order.OrderStatus.CANCELLED);
+                orderRepository.save(order);
                 paymentRepository.save(payment);
                 log.info("Payment failed for orderId: {}, amount: {}, transactionId: {}", orderId, amount, transactionId);
             } else {
@@ -208,23 +237,6 @@ public class PaymentServiceImpl implements PaymentService {
         } catch (Exception e) {
             log.error("Failed to verify payment for orderId: {}", orderId, e);
             throw new RuntimeException("Payment verification failed: " + e.getMessage(), e);
-        }
-    }
-
-    private boolean verifyWithEsewa(String orderId, String amount, String transactionId) {
-        try {
-            String statusUrl = ESEWA_STATUS_URL + "?product_code=" + MERCHANT_CODE +
-                    "&total_amount=" + amount +
-                    "&transaction_uuid=ORDER_" + orderId;
-            log.info("Calling eSewa status API: {}", statusUrl);
-
-            String response = restTemplate.getForObject(statusUrl, String.class);
-            log.info("eSewa status response: {}", response);
-
-            return response != null && response.contains("SUCCESS");
-        } catch (Exception e) {
-            log.error("Failed to verify with eSewa for orderId: {}, transactionId: {}", orderId, transactionId, e);
-            return false;
         }
     }
 

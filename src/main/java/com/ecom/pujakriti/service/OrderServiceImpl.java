@@ -1,53 +1,53 @@
 package com.ecom.pujakriti.service;
 
 import com.ecom.pujakriti.entity.*;
+import com.ecom.pujakriti.exceptions.ProductNotFoundException;
 import com.ecom.pujakriti.model.AddressResponse;
+import com.ecom.pujakriti.model.AdminOrdersResponse;
 import com.ecom.pujakriti.model.OrderResponse;
 import com.ecom.pujakriti.model.OrdersResponse;
 import com.ecom.pujakriti.repository.*;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.chrono.ChronoLocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @Log4j2
 public class OrderServiceImpl implements OrderService {
 
-    private final UserRepository userRepository;
-    private final AddressRepository addressRepository;
-    private final CartRepository cartRepository;
-    private final DiscountCodeRepository discountRepository;
-    private final OrderRepository orderRepository;
-    private final PaymentRepository paymentRepository;
-    private final OrderItemRepository orderItemRepository;
-    private final ProductRepository productRepository;
-    private final BundleRepository bundleRepository;
+    @Autowired
+    private UserRepository userRepository;
 
-    public OrderServiceImpl(
-            UserRepository userRepository,
-            AddressRepository addressRepository,
-            CartRepository cartRepository,
-            DiscountCodeRepository discountRepository,
-            OrderRepository orderRepository,
-            PaymentRepository paymentRepository,
-            OrderItemRepository orderItemRepository,
-            ProductRepository productRepository,
-            BundleRepository bundleRepository) {
-        this.userRepository = userRepository;
-        this.addressRepository = addressRepository;
-        this.cartRepository = cartRepository;
-        this.discountRepository = discountRepository;
-        this.orderRepository = orderRepository;
-        this.paymentRepository = paymentRepository;
-        this.orderItemRepository = orderItemRepository;
-        this.productRepository = productRepository;
-        this.bundleRepository = bundleRepository;
-    }
+    @Autowired
+    private AddressRepository addressRepository;
+
+    @Autowired
+    private CartRepository cartRepository;
+
+    @Autowired
+    private DiscountCodeRepository discountRepository;
+
+    @Autowired
+    private OrderRepository orderRepository;
+
+    @Autowired
+    private PaymentRepository paymentRepository;
+
+    @Autowired
+    private OrderItemRepository orderItemRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
+
+    @Autowired
+    private  BundleRepository bundleRepository;
 
     @Transactional
     public OrderResponse createOrder(Integer userId, Integer addressId, String cartId, String discountCode) {
@@ -186,6 +186,102 @@ public class OrderServiceImpl implements OrderService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<AdminOrdersResponse> getAllOrdersForAdmin() {
+        log.info("Getting all orders from repository");
+        List<Order> orders = orderRepository.findAll();
+        return orders.stream()
+                .map(this::convertToOrderResponse)
+                .toList();
+    }
+
+    @Override
+    public OrderResponse updateOrderStatus(Integer orderId, String newStatus) {
+        log.info("Updating order {} status to {}", orderId, newStatus);
+        Optional<Order> orderOptional = orderRepository.findById(orderId);
+        if (orderOptional.isEmpty()) {
+            throw new ProductNotFoundException("Order not found with id: " + orderId);
+        }
+        Order order = orderOptional.get();
+        try {
+            order.setStatus(Order.OrderStatus.valueOf(newStatus.toUpperCase()));
+        } catch (IllegalArgumentException e) {
+            log.error("Invalid order status: {}", newStatus, e);
+            throw new IllegalArgumentException("Invalid order status: " + newStatus);
+        }
+        Order updatedOrder = orderRepository.save(order);
+        return convertToOrderRes(updatedOrder); // use the conversion method.
+    }
+
+    private OrderResponse convertToOrderRes(Order order) {
+        return OrderResponse.builder()
+                .orderId(order.getOrderId())
+                .userId(order.getUser().getUserId())
+                .totalAmount(order.getTotalAmount())
+                .address(order.getAddress().getAddressId())
+                .status(order.getStatus())
+                .discountCodeId(order.getDiscountCode().getDiscountId())
+                .orderDate(order.getOrderDate())
+                .orderItems(order.getOrderItems().stream()
+                        .map(this::convertOrderItemsToRes)
+                        .collect(Collectors.toList())
+                ) //and this
+                .paymentID(order.getPayment().getPaymentId())
+                .build();
+    }
+    private OrderResponse.OrderItemDTO convertOrderItemsToRes(OrderItem orderItem) {
+        Integer productId= null;
+        Integer bundleId = null;
+        if (orderItem.getProduct() != null) {
+            productId = orderItem.getProduct().getProductId();
+        } else if (orderItem.getBundle() != null) {
+            bundleId = orderItem.getBundle().getBundleId();
+        }
+        return OrderResponse.OrderItemDTO.builder()
+                .orderItemId(orderItem.getOrderItemId())
+                .productId(productId)
+                .bundleId(bundleId)
+                .build();
+    }
+
+
+    private AdminOrdersResponse convertToOrderResponse(Order order) {
+        return AdminOrdersResponse.builder()
+                .orderId(order.getOrderId())
+                .userId(order.getUser().getUserId())
+                .userName(order.getUser().getName())
+                .totalAmount(order.getTotalAmount())
+                .address(order.getAddress().getCity() + " " + order.getAddress().getStreet() + " " + order.getAddress().getState())
+                .status(order.getStatus())
+                .discountCode(order.getDiscountCode().getCode())
+                .discountRate(order.getDiscountCode().getDiscountRate())
+                .orderDate(order.getOrderDate())
+                .orderItems(order.getOrderItems().stream()
+                        .map(this::convertOrderItemsToDTO)
+                        .collect(Collectors.toList())
+                ) //and this
+                .paymentID(order.getPayment().getPaymentId())
+                .build();
+    }
+
+    private AdminOrdersResponse.AdminOrderItemDTO convertOrderItemsToDTO(OrderItem orderItem) {
+        String productName = "";
+        String bundleName = "";
+        if (orderItem.getProduct() != null) {
+            productName = orderItem.getProduct().getName();
+        } else if (orderItem.getBundle() != null) {
+            bundleName = orderItem.getBundle().getName();
+        }
+
+        return AdminOrdersResponse.AdminOrderItemDTO.builder()
+                .orderItemId(orderItem.getOrderItemId())
+                .productName(productName)
+                .bundleName(bundleName)
+                .quantity(orderItem.getQuantity())
+                .price(orderItem.getPrice())
+                .build();
+
+    }
 
     private OrdersResponse mapToResponse(Order order) {
         return OrdersResponse.builder()
@@ -206,8 +302,6 @@ public class OrderServiceImpl implements OrderService {
                 .transactionId(order.getPayment().getTransactionId())
                 .build();
     }
-
-
 
     private OrdersResponse.OrdersItemDTO mapToOrdersItemDTO(OrderItem orderItem) {
         String productName = "";
