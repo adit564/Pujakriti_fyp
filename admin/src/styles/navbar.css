@@ -1,0 +1,133 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  .navbar {
+    background: #fff;
+    border-bottom: 1px solid #e5e5e5;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    font-family: "Poppins", sans-serif;
+  }
+  .navbar-container {
+    max-width: 100vw;
+    margin: 0 auto;
+    padding: 0 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 60px;
+  }
+  .navbar-logo {
+    font-size: 18px;
+    font-weight: bold;
+    color: #4B0082;
+    text-decoration: none;
+  }
+  .navbar-links {
+    display: flex;
+    gap: 10px;
+  }
+  .navbar-links a {
+    display: inline-block;
+    padding: 8px 12px;
+    font-size: 14px;
+    color: #4B0082;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+  .navbar-links a:hover {
+    background: #4B0082;
+    color: #fff;
+  }
+  .navbar-links a.active {
+    border-bottom: 2px solid #DAA520;
+    background: #f9f9f9;
+  }
+  .hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 24px;
+    height: 18px;
+    cursor: pointer;
+  }
+  .hamburger span {
+    background: #4B0082;
+    height: 2px;
+    border-radius: 1px;
+    transition: all 0.3s ease;
+  }
+  .mobile-menu {
+    display: none;
+    background: #fff;
+    border-bottom: 1px solid #e5e5e5;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    right: 0;
+    padding: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
+  .mobile-menu.open {
+    display: block;
+  }
+  .mobile-menu a {
+    display: block;
+    padding: 10px 15px;
+    font-size: 14px;
+    color: #4B0082;
+    text-decoration: none;
+    border-radius: 4px;
+    margin-bottom: 5px;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+  .mobile-menu a:hover {
+    background: #4B0082;
+    color: #fff;
+  }
+  .mobile-menu a.active {
+    border-left: 2px solid #DAA520;
+    background: #f9f9f9;
+  
+  }
+
+  .navbar-links .nav-logout-button{
+    display: inline-block;
+    padding: 8px 12px;
+    font-size: 14px;
+    background-color: #4B0082;
+    color: #fff;
+    border-radius: 4px;
+    transition: background 0.2s ease, color 0.2s ease;
+    outline: none;
+    border: none;
+  }
+  .nav-logout-button:hover {
+    background: red;
+  }
+
+
+  @media (max-width: 768px) {
+    .navbar-links {
+      display: none;
+    }
+    .hamburger {
+      display: flex;
+    }
+    .hamburger.open span:nth-child(1) {
+      transform: rotate(45deg) translate(5px, 5px);
+    }
+    .hamburger.open span:nth-child(2) {
+      opacity: 0;
+    }
+    .hamburger.open span:nth-child(3) {
+      transform: rotate(-45deg) translate(7px, -7px);
+    }
+  }

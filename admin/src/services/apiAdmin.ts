@@ -471,7 +471,7 @@ export const updateBundleDetails = async (
   }
 ): Promise<void> => {
   try {
-    const response = await fetch(`/api/bundles/admin/update/${bundleId}`, {
+    const response = await fetch(`http://localhost:8081/api/bundles/admin/update/${bundleId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -722,7 +722,6 @@ export const deleteBundle = async (bundleId: number): Promise<void> => {
     throw error;
   }
 };
-
 
 
 export const fetchOrders = async (): Promise<AdminOrder[]> => {

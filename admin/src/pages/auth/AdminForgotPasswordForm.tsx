@@ -1,24 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../../app/store/configureStore";
-import "../../app/styles/auth.css";
-import {
-  forgotPassword,
-  clearAuthError,
-  clearForgotPasswordMessage,
-} from "./authSlice"; // Import the forgotPassword action and clear actions
+import { Link, useNavigate } from "react-router-dom";
+import { forgotPasswordAdmin } from "../../services/adminAuthService";
+import { clearForgotPasswordMessage, clearAdminAuthError } from "../../services/adminAuthSlice";
+import { useAppDispatch, useAppSelector } from "../../store/store";
 
-const ForgotPasswordForm = () => {
+const AdminForgotPasswordForm = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const { loading, error, forgotPasswordMessage } = useAppSelector(
-    (state) =>
-      state.auth as {
-        loading: boolean;
-        error: { message?: string; detail?: string } | string | null;
-        forgotPasswordMessage: string | null;
-      }
+    (state) => state.adminAuth
   );
   const [email, setEmail] = useState("");
+  const [emailSent, setEmailSent] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
@@ -26,16 +19,15 @@ const ForgotPasswordForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    dispatch(forgotPassword(email)); // Dispatch the forgotPassword thunk with the email
+    dispatch(forgotPasswordAdmin(email) as any);
+    setEmailSent(true);
   };
 
-  // Clear any existing auth errors when the component mounts/unmounts
   useEffect(() => {
-    dispatch(clearAuthError());
-    dispatch(clearForgotPasswordMessage());
     return () => {
-      dispatch(clearAuthError());
       dispatch(clearForgotPasswordMessage());
+      dispatch(clearAdminAuthError());
+      setEmailSent(false);
     };
   }, [dispatch]);
 
@@ -52,13 +44,11 @@ const ForgotPasswordForm = () => {
           justify-content:center;
           align-items:center;
           }
-
           .login_linkk{
           text-decoration:none;
           color:#131313;
           margin-top:2vh;
           }
-
         `}
       </style>
       <div className="forgot-password-container">
@@ -67,41 +57,41 @@ const ForgotPasswordForm = () => {
           <p className="form-subtitle">
             Enter your email address to reset your password.
           </p>
-
           {error && (
             <div className="error-message">
-              {typeof error === "string"
-                ? error
-                : error.message || error.detail || "An error occurred"}
+              {error.message || "An error occurred"}
             </div>
           )}
           {forgotPasswordMessage && (
             <div className="success-message">{forgotPasswordMessage}</div>
           )}
-
-          <div className="form-group">
-            <label htmlFor="email">Email Address</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={email}
-              onChange={handleChange}
-              placeholder="your@email.com"
-              required
-            />
-          </div>
-
-          <button type="submit" disabled={loading} className="submit-btn">
+          {!emailSent ? (
+            <div className="form-group">
+              <label htmlFor="email">Email Address</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={email}
+                onChange={handleChange}
+                placeholder="your@email.com"
+                required
+              />
+            </div>
+          ) : null}
+          <button
+            type="submit"
+            disabled={loading}
+            className="submit-btn"
+          >
             {loading ? (
               <span className="spinner">Sending...</span>
             ) : (
               "Send Reset Link"
             )}
           </button>
-
           <div className="auth-link">
-            <Link className="login_linkk" to="/login">
+            <Link className="login_linkk" to="/admin/login">
               Back to Login
             </Link>
           </div>
@@ -111,4 +101,4 @@ const ForgotPasswordForm = () => {
   );
 };
 
-export default ForgotPasswordForm;
+export default AdminForgotPasswordForm;

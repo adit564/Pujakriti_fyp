@@ -1,9 +1,9 @@
 import axios, { AxiosResponse, AxiosError } from "axios";
 
-const apiUrl = 'http://localhost:8081/api/auth'; // adjust if needed
+const apiUrl = 'http://localhost:8081/api/auth'; 
 
 export interface AuthResponse {
-  token: string; // Token is optional for signup success message
+  token: string;
   name: string;
   email: string;
   role: string;
@@ -19,7 +19,7 @@ const handleRequest = async (promise: Promise<AxiosResponse>): Promise<AxiosResp
   try {
     return await promise;
   } catch (error: any) {
-    throw error; // Re-throw the caught error directly
+    throw error;
   }
 };
 
@@ -59,5 +59,5 @@ export const forgotPassword = async (email: string): Promise<any> => {
 
 export const resetPassword = async (token: string, newPassword: string): Promise<any> => {
   const response = await handleRequest(axios.post(`${apiUrl}/reset-password`, { token, newPassword }));
-  return response.data; // Or handle based on your backend response
+  return response.data;
 };

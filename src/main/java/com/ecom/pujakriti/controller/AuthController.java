@@ -133,7 +133,6 @@ public class AuthController {
                 .build());
     }
 
-
     @PostMapping("/forgot-password")
     public ResponseEntity<AuthResponse> forgotPassword(@RequestBody LoginRequest request) { // Using LoginRequest for email
         User user = userRepository.findByEmail(request.getEmail())

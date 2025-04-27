@@ -390,7 +390,7 @@
 /* ---------------------------------------- */
 .profile-page {
   background-color: #f8f9fa; /* Light grey background */
-  padding: 3rem 0;
+  padding: 15vh 4vw;
   min-height: 100vh;
   display: flex;
   justify-content: center;
@@ -398,7 +398,7 @@
 }
 
 .content-container {
-  max-width: 900px; /* Slightly narrower for a more focused look */
+  width: 60vw; 
   width: 95%;
   margin: 0 auto;
   padding: 2.5rem;

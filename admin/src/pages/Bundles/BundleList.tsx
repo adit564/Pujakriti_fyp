@@ -3,7 +3,8 @@ import React, { useState, useEffect, memo } from "react";
 import { fetchBundles, deleteBundle, fetchBundleImage, fetchPujas } from "../../services/apiAdmin";
 import { Bundle } from "../../types/Bundle";
 import { Link, useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { Puja } from "../../types/Puja";
 
 interface BundleListResponse {
@@ -169,19 +170,12 @@ const BundleList: React.FC = () => {
     const pageNumbers = Array.from({ length: totalPages }, (_, index) => index);
 
     return (
-      <div style={{ marginTop: "20px" }}>
+      <div className="pagination">
         {pageNumbers.map((pageNumber) => (
           <button
             key={pageNumber}
             onClick={() => handlePageChange(pageNumber)}
-            style={{
-              marginRight: "5px",
-              padding: "8px 12px",
-              border: "1px solid #ccc",
-              borderRadius: "4px",
-              cursor: "pointer",
-              backgroundColor: currentPage === pageNumber ? "#f0f0f0" : "white",
-            }}
+            className={currentPage === pageNumber ? "active" : ""}
           >
             {pageNumber + 1}
           </button>
@@ -190,114 +184,259 @@ const BundleList: React.FC = () => {
     );
   };
 
-  if (loading) {
-    return <div>Loading bundles...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
-
   return (
-    <div>
+    <div className="bundle-list">
+      <style>
+        {`
+          .bundle-list {
+            font-family: 'Arial', sans-serif;
+            padding: 20px;
+            background-color: #f4f4f9;
+            min-height: 100vh;
+          }
+          .bundle-list h1 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #333;
+            text-align: center;
+          }
+          .add-new-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 15px;
+            background-color: #4B0082;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+          }
+          .add-new-link:hover {
+            background-color: #DAA520;
+          }
+          .search-filter-sort {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+          }
+          .search-filter-sort label {
+            font-weight: bold;
+            color: #555;
+          }
+          .search-filter-sort input[type="text"],
+          .search-filter-sort select {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+          }
+          .bundle-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border-radius: 5px;
+            overflow: hidden;
+          }
+          .bundle-table th, .bundle-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+          }
+          .bundle-table th {
+            background-color: #f8f8f8;
+            font-weight: bold;
+            color: #333;
+            text-transform: uppercase;
+            font-size: 12px;
+          }
+          .bundle-table tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+          }
+          .bundle-table tbody tr:hover {
+            background-color: #f5f5f5;
+          }
+          .bundle-table td img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 5px;
+            vertical-align: middle;
+            margin-right: 10px;
+          }
+          .bundle-table .actions button {
+            padding: 8px 12px;
+            margin-right: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+          }
+          .bundle-table .actions button:first-child {
+            background-color: #007bff;
+            color: white;
+          }
+          .bundle-table .actions button:first-child:hover {
+            background-color: #0056b3;
+          }
+          .bundle-table .actions button:last-child {
+            background-color: #dc3545;
+            color: white;
+          }
+          .bundle-table .actions button:last-child:hover {
+            background-color: #c82333;
+          }
+          .pagination {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+          }
+          .pagination button {
+            padding: 8px 12px;
+            margin: 0 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: white;
+            color: #333;
+            font-size: 14px;
+          }
+          .pagination button.active {
+            background-color: #f0f0f0;
+            font-weight: bold;
+          }
+          .pagination button:hover {
+            background-color: #eee;
+          }
+          .loading {
+            text-align: center;
+            padding: 20px;
+            font-size: 16px;
+            color: #555;
+          }
+          .error {
+            text-align: center;
+            padding: 20px;
+            font-size: 16px;
+            color: #dc3545;
+          }
+        `}
+      </style>
       <h1>Bundle List</h1>
-      <Link to="/admin/bundles/add" style={{ marginBottom: "10px", display: "inline-block" }}>
+      <Link to="/admin/bundles/add" className="add-new-link">
         Add New Bundle
       </Link>
-      <div style={{ marginBottom: "10px" }}>
-        <label htmlFor="searchInput">Search by Name: </label>
-        <input
-          type="text"
-          id="searchInput"
-          value={searchTerm}
-          onChange={handleSearchChange}
-          placeholder="Enter bundle name"
-        />
+      <div className="search-filter-sort">
+        <div>
+          <label htmlFor="searchInput">Search by Name: </label>
+          <input
+            type="text"
+            id="searchInput"
+            value={searchTerm}
+            onChange={handleSearchChange}
+            placeholder="Enter bundle name"
+          />
+        </div>
+        <div>
+          <label htmlFor="pujaFilter">Filter by Puja: </label>
+          <select id="pujaFilter" value={selectedPuja || ""} onChange={handlePujaChange}>
+            <option value="">All Pujas</option>
+            {pujas.map((puja) => (
+              <option key={puja.pujaId} value={puja.pujaId}>
+                {puja.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label htmlFor="sortField">Sort By: </label>
+          <select
+            id="sortField"
+            value={sortField}
+            onChange={handleSortFieldChange}
+          >
+            <option value="bundleId">ID</option>
+            <option value="name">Name</option>
+            <option value="price">Price</option>
+            <option value="stock">Stock</option>
+          </select>
+          <label htmlFor="sortOrder" style={{ marginLeft: "10px" }}>
+            Order:{" "}
+          </label>
+          <select
+            id="sortOrder"
+            value={sortOrder}
+            onChange={handleSortOrderChange}
+          >
+            <option value="asc">Ascending</option>
+            <option value="desc">Descending</option>
+          </select>
+        </div>
       </div>
-      <div style={{ marginBottom: "10px" }}>
-        <label htmlFor="pujaFilter">Filter by Puja: </label>
-        <select id="pujaFilter" value={selectedPuja || ""} onChange={handlePujaChange}>
-          <option value="">All Pujas</option>
-          {pujas.map((puja) => (
-            <option key={puja.pujaId} value={puja.pujaId}>
-              {puja.name}
-            </option>
-          ))}
-        </select>
-      </div>
-      {/* Removed Guide Filter */}
-      <div style={{ marginBottom: "10px" }}>
-        <label htmlFor="sortField">Sort By: </label>
-        <select
-          id="sortField"
-          value={sortField}
-          onChange={handleSortFieldChange}
-        >
-          <option value="bundleId">ID</option>
-          <option value="name">Name</option>
-          <option value="price">Price</option>
-          <option value="stock">Stock</option>
-        </select>
-        <label htmlFor="sortOrder" style={{ marginLeft: "10px" }}>
-          Order:{" "}
-        </label>
-        <select
-          id="sortOrder"
-          value={sortOrder}
-          onChange={handleSortOrderChange}
-        >
-          <option value="asc">Ascending</option>
-          <option value="desc">Descending</option>
-        </select>
-      </div>
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Image</th>
-            <th>Name</th>
-            <th>Description</th>
-            <th>Price</th>
-            <th>Stock</th>
-            <th>Puja</th>
-            {/* Removed Guide Header */}
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {bundles.map((bundle) => (
-            <tr key={bundle.bundleId}>
-              <td>{bundle.bundleId}</td>
-              <td>
-                <img
-                  src={generateBundleImageUrl(bundle.bundleId)}
-                  alt={bundle.name}
-                  style={{ width: "50px", height: "50px", objectFit: "cover" }}
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src =
-                      "/images/client_bundle_images/default.jpg";
-                  }}
-                />
-              </td>
-              <td>{bundle.name}</td>
-              <td>{bundle.description}</td>
-              <td>{bundle.price}</td>
-              <td>{bundle.stock}</td>
-              <td>{bundle.puja}</td>
-              <td>
-                <button onClick={() => handleEditBundle(bundle.bundleId)}>Edit</button>
-                <button
-                  style={{ marginLeft: "5px", backgroundColor: "#f44336", color: "white" }}
-                  onClick={() => handleDeleteBundle(bundle.bundleId)}
-                >
-                  Delete
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      {totalPages > 1 && renderPagination()}
+      {loading ? (
+        <div className="loading">Loading bundles...</div>
+      ) : error ? (
+        <div className="error">Error: {error}</div>
+      ) : (
+        <>
+          <table className="bundle-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Image</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Puja</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {bundles.map((bundle) => (
+                <tr key={bundle.bundleId}>
+                  <td>{bundle.bundleId}</td>
+                  <td>
+                    <img
+                      src={generateBundleImageUrl(bundle.bundleId)}
+                      alt={bundle.name}
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src =
+                          "/images/client_bundle_images/default.jpg";
+                      }}
+                    />
+                  </td>
+                  <td>{bundle.name}</td>
+                  <td>{bundle.description}</td>
+                  <td>{bundle.price}</td>
+                  <td>{bundle.stock}</td>
+                  <td>{bundle.puja}</td>
+                  <td className="actions">
+                    <button onClick={() => handleEditBundle(bundle.bundleId)}>Edit</button>
+                    <button onClick={() => handleDeleteBundle(bundle.bundleId)}>Delete</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {totalPages > 1 && renderPagination()}
+        </>
+      )}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </div>
   );
 };
