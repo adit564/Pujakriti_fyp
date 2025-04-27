@@ -25,6 +25,20 @@ export default function HomePage() {
   );
   const discountRate = discount?.discountRate ?? 0;
   const dispatch = useAppDispatch();
+
+
+  const userString = localStorage.getItem("user");
+  let currentUser: { user_Id: number | undefined } | null = null;
+
+  if (userString) {
+    try {
+      currentUser = JSON.parse(userString);
+    } catch (error) {
+      console.error("Error parsing user data from local storage:", error);
+    }
+  }
+
+
   useEffect(() => {
     fetch(
       "http://localhost:8081/api/products?page=0&size=4&sort=productId&order=desc"
@@ -55,7 +69,7 @@ export default function HomePage() {
 
     function addItemToCart(product: Product) {
       setLoading(true);
-      agent.Cartt.addItem(product, 1, dispatch, discountRate)
+      agent.Cartt.addItem(product, 1, dispatch, discountRate,currentUser?.user_Id)
         .then((response) => dispatch(setCart(response.cart)))
         .catch((error) => console.error("Failed to add item to cart: ", error))
         .finally(() => setLoading(false));
@@ -115,8 +129,8 @@ export default function HomePage() {
             <span>2025/Products</span>
             <span>New Products</span>
             <span>
-              Discover the latest additions to the Shoes line from the FW 2025
-              collection, combining design, innovation, technology and
+              Discover the latest additions to the Puja products line from the FW 2025
+              collection, combining high quality and
               sustainability.
             </span>
             <div className="newProducts__links">

@@ -1,9 +1,5 @@
 package com.ecom.pujakriti.model;
 
-
-import com.ecom.pujakriti.entity.Guide;
-import com.ecom.pujakriti.entity.Puja;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

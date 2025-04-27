@@ -42,6 +42,25 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
+    public void sendSuggestionEmail(String to, String suggestionMessage) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(to);
+        message.setSubject("Bundle suggestion");
+        message.setText(suggestionMessage);
+
+        try {
+            mailSender.send(message);
+            logger.info("Suggestion email sent to: {}", to);
+        } catch (Exception e) {
+            logger.error("Error sending Suggestion email to {}: {}", to, e.getMessage());
+            // Consider more robust error handling (e.g., retries, queueing) in a production environment
+        }
+    }
+
+
+
+
+    @Override
     public void sendPasswordResetEmail(String toEmail, String resetLink) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(senderEmail);

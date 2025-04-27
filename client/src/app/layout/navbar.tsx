@@ -88,6 +88,7 @@ export default function Navbar() {
             <a href="/products">Products</a>
             <a href="/bundles">Bundles</a>
             <a href="/contact">Contact</a>
+            <a href="/suggest-bundle">Suggest Bundle</a>
           </div>
         </div>
         <div className="right_menu menu">

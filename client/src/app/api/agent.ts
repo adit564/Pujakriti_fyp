@@ -434,6 +434,7 @@ const User={
   }
 }
 
+
 const agent = {
   Cartt,
   ProductsList,
@@ -445,6 +446,7 @@ const agent = {
   Payments,
   User
 };
+
 
 
 

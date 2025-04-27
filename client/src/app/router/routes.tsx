@@ -21,6 +21,7 @@ import VerifyEmailPage from "../../features/auth/VerifyEmailPage";
 import ForgotPasswordForm from "../../features/auth/ForgotPasswordForm";
 import ResetPasswordForm from "../../features/auth/ResetPasswordForm";
 import ViewProfile from "../../features/auth/viewProfile";
+import BundleSuggestionForm from "../../features/contact/BundleSuggestionForm";
 
 export const router = createBrowserRouter([
   {
@@ -55,6 +56,9 @@ export const router = createBrowserRouter([
 
       { path: "/payment-verify", element: <PaymentVerify />,      },
       { path: '/payment/initiate/:orderId/:grandTotal', element: <PaymentInitiationPage /> },
+
+      { path: "suggest-bundle", element: <BundleSuggestionForm /> },
+
 
       { path: "not-found", element: <NotFoundError /> },
       { path: "server-error", element: <ServerError /> },

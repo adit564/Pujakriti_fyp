@@ -5,6 +5,6 @@ public interface EmailService {
     void sendPasswordResetEmail(String toEmail, String resetLink);
 
     void sendOrderConfirmationEmailWithAttachment(String to, String subject, String body, String attachmentName, byte[] attachmentBytes);
-
+    void sendSuggestionEmail(String to, String suggestionMessage);
 
 }
