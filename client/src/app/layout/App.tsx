@@ -1,4 +1,3 @@
-import "../styles/app.css";
 import Navbar from "./navbar.tsx";
 import Footer from "./footer.tsx";
 import { Outlet } from "react-router-dom";

@@ -4,7 +4,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  /* background: linear-gradient(135deg, #f8f8f8 0%, #b2b6bd 100%); */
   background-color: #f8f8f8;
   padding: 20px;
 }
@@ -198,13 +197,111 @@
   }
 }
 
-/* Responsive Design */
-@media (max-width: 480px) {
+/* Responsive Design - Breakpoints */
+
+/* Extra small devices (phones, 375px and down) */
+@media (max-width: 375px) {
+  .signup-form {
+    padding: 25px 15px;
+    margin: 10px;
+  }
+  
+  .form-title {
+    font-size: 22px;
+  }
+  
+  .form-subtitle {
+    font-size: 14px;
+    margin-bottom: 25px;
+  }
+  
+  .form-group input {
+    padding: 12px 14px;
+  }
+  
+  .submit-btn {
+    padding: 12px;
+  }
+}
+
+/* Small devices (phones, 376px to 576px) */
+@media (min-width: 376px) and (max-width: 576px) {
   .signup-form {
     padding: 30px 20px;
   }
   
   .form-title {
     font-size: 24px;
+  }
+  
+  .form-subtitle {
+    font-size: 15px;
+  }
+}
+
+/* Medium devices (tablets, 577px to 768px) */
+@media (min-width: 577px) and (max-width: 768px) {
+  .signup-form {
+    max-width: 400px;
+    padding: 35px 30px;
+  }
+}
+
+/* Large devices (laptops, 769px to 992px) */
+@media (min-width: 769px) and (max-width: 992px) {
+  .signup-form {
+    max-width: 420px;
+  }
+}
+
+/* Extra large devices (large laptops and desktops, 993px to 1200px) */
+@media (min-width: 993px) and (max-width: 1200px) {
+  .signup-form {
+    max-width: 450px;
+  }
+}
+
+/* XXL devices (larger desktops, 1201px and up) */
+@media (min-width: 1201px) {
+  .signup-form {
+    max-width: 500px;
+    padding: 50px;
+  }
+  
+  .form-title {
+    font-size: 32px;
+  }
+  
+  .form-subtitle {
+    font-size: 17px;
+  }
+}
+
+/* Special cases for landscape orientation on mobile devices */
+@media (max-height: 500px) and (orientation: landscape) {
+  .signup-container {
+    align-items: flex-start;
+    padding-top: 30px;
+    padding-bottom: 30px;
+  }
+  
+  .signup-form {
+    max-width: 90%;
+    padding: 25px;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+}
+
+/* High DPI devices */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .signup-form {
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12);
+  }
+  
+  .submit-btn {
+    letter-spacing: 0.5px;
   }
 }

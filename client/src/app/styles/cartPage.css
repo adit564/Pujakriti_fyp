@@ -6,7 +6,6 @@
   min-height: 70vh;
 }
 
-
 .cartItem {
   display: flex;
   justify-content: space-between;
@@ -77,8 +76,8 @@
   font-weight: 600;
   color: #131313;
 }
-/* ----------------------------------------- */
 
+/* Cart Totals */
 .cart_totals_container {
   position: fixed;
   top: 15vh;
@@ -113,10 +112,11 @@
   gap: 2vh;
 }
 
-.applied_discount{
+.applied_discount {
   color: rgb(173, 173, 173);
   font-weight: 500;
 }
+
 .cart_total,
 .cart_discount {
   display: flex;
@@ -135,19 +135,219 @@
   padding: 1.5vh 1vw;
   border-radius: 0.5vw;
   text-align: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.checkoutBtn:hover {
+  background-color: #333;
 }
 
 .address_selection {
   margin: 20px 0;
 }
+
 .address_selection label {
   display: block;
   margin-bottom: 10px;
   font-weight: bold;
 }
+
 .address_selection select {
   width: 100%;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
+}
+
+/* Responsive Breakpoints */
+
+/* Extra small devices (phones, 320px to 575px) */
+@media (max-width: 575px) {
+  .cartPage {
+    padding: 12vh 5vw 12vh 5vw;
+    min-height: 80vh;
+  }
+
+  .cart_totals_container {
+    position: static;
+    order: -1;
+    margin-bottom: 5vh;
+  }
+
+  .cartItem {
+    flex-direction: column;
+    gap: 3vh;
+    padding: 3vh 5vw;
+  }
+
+  .cart_Item_container {
+    width: 100%;
+    gap: 5vw;
+  }
+
+  .cart_Item_image {
+    width: 25vw;
+    height: 25vw;
+  }
+
+  .cart_item_detail span,
+  .cartItem_price {
+    font-size: 4vw;
+  }
+
+  .cart_item_detail p,
+  .remove_cart_item {
+    font-size: 3.5vw;
+  }
+
+  .cart_item_footer {
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    gap: 0;
+    justify-content: space-between;
+  }
+
+  .cart_page_title {
+    font-size: 6vw;
+    margin-bottom: 3vh;
+  }
+
+  .cart_totals {
+    gap: 5vh;
+    padding: 3vh 5vw;
+    font-size: 4vw;
+  }
+
+  .checkoutBtn {
+    padding: 2vh 5vw;
+    border-radius: 1.5vw;
+    font-size: 4vw;
+  }
+
+  .address_selection select {
+    padding: 12px;
+    font-size: 4vw;
+  }
+}
+
+/* Small devices (576px to 767px) */
+@media (min-width: 576px) and (max-width: 767px) {
+  .cartPage {
+    padding: 12vh 5vw 12vh 35vw;
+  }
+
+  .cart_totals_container {
+    left: 5vw;
+    width: 30vw;
+  }
+
+  .cart_Item_image {
+    width: 15vw;
+    height: 15vw;
+  }
+
+  .cart_item_detail span,
+  .cartItem_price {
+    font-size: 2vw;
+  }
+
+  .cart_item_detail p,
+  .remove_cart_item {
+    font-size: 1.8vw;
+  }
+
+  .cart_page_title {
+    font-size: 2.5vw;
+  }
+
+  .cart_totals {
+    font-size: 1.8vw;
+    gap: 20vh;
+  }
+
+  .checkoutBtn {
+    padding: 1.5vh 2vw;
+    font-size: 1.8vw;
+  }
+}
+
+/* Medium devices (768px to 991px) */
+@media (min-width: 768px) and (max-width: 991px) {
+  .cartPage {
+    padding: 15vh 5vw 15vh 30vw;
+  }
+
+  .cart_totals_container {
+    left: 5vw;
+    width: 25vw;
+  }
+
+  .cart_Item_image {
+    width: 12vw;
+    height: 12vw;
+  }
+
+  .cart_item_detail span,
+  .cartItem_price {
+    font-size: 1.5vw;
+  }
+
+  .cart_item_detail p,
+  .remove_cart_item {
+    font-size: 1.3vw;
+  }
+
+  .cart_page_title {
+    font-size: 2vw;
+  }
+
+  .cart_totals {
+    font-size: 1.3vw;
+    gap: 25vh;
+  }
+}
+
+/* Large devices (992px to 1199px) */
+@media (min-width: 992px) and (max-width: 1199px) {
+  .cartPage {
+    padding: 15vh 4vw 15vh 22vw;
+  }
+
+  .cart_totals_container {
+    left: 4vw;
+    width: 18vw;
+  }
+
+  .cart_Item_image {
+    width: 8vw;
+    height: 8vw;
+  }
+}
+
+/* Extra large devices (1200px and up) */
+@media (min-width: 1200px) {
+  /* Default styles already cover this breakpoint */
+}
+
+/* Landscape orientation adjustments */
+@media (max-height: 600px) and (orientation: landscape) {
+  .cartPage {
+    padding-top: 10vh;
+    padding-bottom: 10vh;
+    min-height: 80vh;
+  }
+
+  .cart_totals {
+    gap: 15vh;
+  }
+}
+
+/* High DPI devices */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .cartItem,
+  .cart_totals {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  }
 }
