@@ -122,9 +122,7 @@ export default function ProductList({ products }: Props) {
         <span>2025/Products</span>
         <span>All Products</span>
         <span>
-          Discover the latest additions to the Shoes line from the FW 2025
-          collection, combining design, innovation, technology, and
-          sustainability.
+        Discover the latest additions to the Puja products line from the FW 2025 collection, combining high quality and sustainability.
         </span>
       </div>
 

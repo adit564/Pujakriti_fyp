@@ -110,6 +110,7 @@ public class BundleServiceImpl implements BundleService {
                 .name(addBundleRequest.getGuide().getName())
                 .description(addBundleRequest.getGuide().getDescription())
                 .content(addBundleRequest.getGuide().getContent())
+                .puja(puja)
                 .build();
         Guide savedGuide = guideRepository.save(guide);
         log.info("Saved Guide: {}", savedGuide);

@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { fetchOrders, updateOrderStatus } from '../../services/apiAdmin';
+import { fetchOrders, fetchPayments, updateOrderStatus } from '../../services/apiAdmin';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { AdminOrder, Order } from '../../types/Order';
+import { Payment } from '../../types/Payment';
 
 const OrderList: React.FC = () => {
   const [orders, setOrders] = useState<AdminOrder[]>([]);
+  const [payments, setPayment] = useState<Payment[]>([]);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -16,6 +19,8 @@ const OrderList: React.FC = () => {
       try {
         const data = await fetchOrders();
         setOrders(data);
+        const paymentData = await fetchPayments();
+        setPayment(paymentData);
       } catch (err: any) {
         setError(err.message || 'Failed to fetch orders');
         toast.error(err.message || 'Failed to fetch orders');
@@ -142,11 +147,13 @@ const OrderList: React.FC = () => {
                 <th>Discount Code</th>
                 <th>Discount Rate</th>
                 <th>Order Date</th>
+                <th>Payment Status</th>
                 <th>Status</th>
               </tr>
             </thead>
             <tbody>
               {orders.map((order) => (
+
                 <tr key={order.orderId}>
                   <td>{order.orderId}</td>
                   <td>{order.userId}</td>
@@ -156,6 +163,11 @@ const OrderList: React.FC = () => {
                   <td>{order.discountCode || '-'}</td>
                   <td>{order.discountRate !== null ? `${(order.discountRate * 100).toFixed(2)}%` : '-'}</td>
                   <td>{new Date(order.orderDate).toLocaleDateString()}</td>
+                  {payments.map((payment) => 
+                    payment.paymentId === order.paymentID ? (
+                      <td key={payment.paymentId}>{payment.status}</td>
+                    ) : null
+                  )}
                   <td>
                     <select
                       value={order.status}

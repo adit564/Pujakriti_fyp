@@ -120,8 +120,7 @@ CREATE TABLE IF NOT EXISTS BundleCaste (
 -- 1. Seed Data for User (Admin Account)
 INSERT INTO User (UserID, Name, Password, Phone, Email, Role, CreatedAt, IsActive,isEmailVerified)
 VALUES
-    (1, 'Admin', '$2a$10$B1moCDmGpi/98VEnPaS9uOewfrGrc9/7qJSy2io11vvgb7Y0mjXfe', '9816166132', "aditkarki@gmail.com" , 'ADMIN', NOW(), TRUE, TRUE),
-    (2, 'Adit Karki', '$2a$10$B1moCDmGpi/98VEnPaS9uOewfrGrc9/7qJSy2io11vvgb7Y0mjXfe', '9816166132', "sinzoadit@gmail.com" , 'USER', NOW(), TRUE, TRUE);
+    (1, 'Admin', '$2a$10$B1moCDmGpi/98VEnPaS9uOewfrGrc9/7qJSy2io11vvgb7Y0mjXfe', '9816166132', "aditkarki@gmail.com" , 'ADMIN', NOW(), TRUE, TRUE);
 
 
 -- 2. Seed Data for Category
